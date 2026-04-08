@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Second Home Senior Living — Staff App</title>
+<style>
+:root{--brand:#1a7abf;--brand-dark:#0e5a8f;--brand-light:#e8f4fc;--white:#fff;--g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g400:#94a3b8;--g600:#475569;--g800:#1e293b;--danger:#dc2626;--danger-l:#fef2f2;--success:#16a34a;--success-l:#f0fdf4;--warning:#d97706;--warning-l:#fffbeb;--r:12px;--rs:8px;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--g50);color:var(--g800);min-height:100vh;}
+#login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;background:var(--white);}
+.login-logo-wrap{width:100px;height:100px;background:var(--brand);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:18px;}
+.login-title{font-size:20px;font-weight:700;color:var(--brand-dark);text-align:center;margin-bottom:4px;}
+.login-sub{font-size:13px;color:var(--g400);text-align:center;margin-bottom:28px;}
+.login-card{width:100%;max-width:360px;}
+label.fl{font-size:12px;font-weight:700;color:var(--g600);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;display:block;}
+select,input[type=text],input[type=date],input[type=time],textarea{width:100%;padding:11px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:15px;color:var(--g800);background:var(--white);appearance:none;font-family:inherit;transition:border-color .15s;}
+select:focus,input:focus,textarea:focus{outline:none;border-color:var(--brand);}
+textarea{resize:vertical;min-height:80px;line-height:1.5;}
+.mb{margin-bottom:14px;}
+.btn-p{display:block;width:100%;padding:13px;background:var(--brand);color:white;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;}
+.btn-p:active{background:var(--brand-dark);}
+.btn-o{display:block;width:100%;padding:11px;background:transparent;color:var(--brand);border:1.5px solid var(--brand);border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;margin-top:10px;font-family:inherit;}
+.btn-d{display:block;width:100%;padding:13px;background:var(--danger);color:white;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+#app{display:none;flex-direction:column;min-height:100vh;}
+.top-bar{background:var(--brand);padding:14px 16px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.tb-name{color:white;font-size:13px;font-weight:700;}
+.tb-role{color:rgba(255,255,255,.7);font-size:11px;}
+.logout-btn{background:rgba(255,255,255,.15);border:none;color:white;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;}
+.main{flex:1;padding:16px;padding-bottom:86px;}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--g200);display:flex;z-index:100;}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 8px;background:none;border:none;cursor:pointer;color:var(--g400);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-family:inherit;}
+.nb.active{color:var(--brand);}
+.ni{width:22px;height:22px;}
+.screen{display:none;}.screen.active{display:block;}
+.card{background:white;border-radius:var(--r);border:1px solid var(--g200);padding:16px;margin-bottom:14px;}
+.ct{font-size:14px;font-weight:700;color:var(--g800);margin-bottom:12px;}
+.st{font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.07em;margin:20px 0 10px;}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+.bs{background:var(--success-l);color:var(--success);}
+.bw{background:var(--warning-l);color:var(--warning);}
+.bd{background:var(--danger-l);color:var(--danger);}
+.bb{background:var(--brand-light);color:var(--brand-dark);}
+.wb{background:var(--brand);color:white;border-radius:var(--r);padding:16px;margin-bottom:16px;}
+.wb h2{font-size:18px;font-weight:700;margin-bottom:2px;}
+.wb p{font-size:13px;opacity:.8;}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.sc{background:white;border:1px solid var(--g200);border-radius:var(--r);padding:14px;}
+.sl{font-size:11px;color:var(--g400);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.sv{font-size:22px;font-weight:700;color:var(--g800);}
+.ss{font-size:11px;color:var(--g400);margin-top:2px;}
+.ar{display:flex;align-items:center;gap:12px;padding:13px 14px;background:white;border:1px solid var(--g200);border-radius:var(--r);margin-bottom:10px;cursor:pointer;}
+.ar:active{background:var(--g50);}
+.ai{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.at h4{font-size:14px;font-weight:700;color:var(--g800);}
+.at p{font-size:12px;color:var(--g400);margin-top:1px;}
+.aa{margin-left:auto;color:var(--g400);font-size:20px;line-height:1;}
+.cd{text-align:center;padding:24px 0 20px;}
+.ct2{font-size:42px;font-weight:700;color:var(--g800);font-variant-numeric:tabular-nums;}
+.cdate{font-size:14px;color:var(--g400);margin-top:4px;}
+.cs{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;}
+.si{background:var(--success-l);color:var(--success);}
+.so{background:var(--g100);color:var(--g600);}
+.sd{width:8px;height:8px;border-radius:50%;}
+.di{background:var(--success);}
+.do{background:var(--g400);}
+.shi{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--g100);font-size:14px;}
+.shi:last-child{border-bottom:none;}
+.shk{color:var(--g600);}
+.shv{font-weight:700;color:var(--g800);}
+.ro{display:flex;gap:8px;margin-bottom:14px;}
+.ro-opt{flex:1;}
+.ro-opt input{display:none;}
+.ro-opt label{display:block;text-align:center;padding:9px 6px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;font-weight:700;color:var(--g600);cursor:pointer;transition:all .1s;}
+.ro-opt input:checked+label{border-color:var(--brand);background:var(--brand-light);color:var(--brand-dark);}
+.cr{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--g100);}
+.cr:last-child{border-bottom:none;}
+.cl{font-size:13px;color:var(--g800);flex:1;padding-right:8px;}
+.co{display:flex;gap:5px;}
+.cb{padding:5px 9px;border:1.5px solid var(--g200);border-radius:6px;font-size:12px;font-weight:700;background:white;cursor:pointer;color:var(--g600);transition:all .1s;font-family:inherit;}
+.cb.sy{border-color:var(--danger);background:var(--danger-l);color:var(--danger);}
+.cb.sn{border-color:var(--success);background:var(--success-l);color:var(--success);}
+.cb.sa{border-color:var(--brand);background:var(--brand-light);color:var(--brand-dark);}
+.tg{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px;}
+.th{font-size:10px;font-weight:700;text-align:center;color:var(--g400);padding:4px 0;text-transform:uppercase;}
+.tc{border:1.5px solid var(--g200);border-radius:6px;min-height:50px;background:white;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:3px 2px;cursor:pointer;}
+.tn{font-size:16px;font-weight:700;color:var(--brand-dark);}
+.tp{font-size:18px;color:var(--brand);line-height:1;}
+.tper{font-size:9px;color:var(--g400);font-weight:700;text-transform:uppercase;}
+.fd{height:1px;background:var(--g100);margin:16px 0;}
+.ib{background:var(--brand-light);border-radius:var(--rs);padding:10px 12px;margin-bottom:14px;font-size:13px;color:var(--brand-dark);line-height:1.5;}
+.sm{background:var(--success-l);border-radius:var(--rs);padding:14px;text-align:center;display:none;margin-top:12px;}
+.sm.show{display:block;}
+.sm p{color:var(--success);font-weight:700;font-size:15px;margin-bottom:4px;}
+.sm span{color:var(--g600);font-size:13px;}
+.ph{font-size:20px;font-weight:700;color:var(--g800);margin-bottom:4px;}
+.ps{font-size:13px;color:var(--g400);margin-bottom:16px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <img src="data:image/png;base64,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" style="width:160px;margin-bottom:20px;" alt="Second Home Senior Living">
+  <div class="login-card">
+    <label class="fl">Select your name</label>
+    <select id="login-name" class="mb">
+      <option value="">— Choose your name —</option>
+      <optgroup label="Caregivers">
+        <option>Brenda M.</option><option>Comfort A.</option><option>Beatrice W.</option>
+        <option>Noma M.</option><option>Gina K.</option>
+      </optgroup>
+      <optgroup label="Management"><option value="ALM">ALM / Manager</option></optgroup>
+    </select>
+    <button class="btn-p" onclick="doLogin()" style="margin-top:8px;">Sign in</button>
+  </div>
+</div>
+
+<div id="app">
+  <div class="top-bar">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:34px;height:34px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 52 52" fill="none"><path d="M26 4L5 22h7v24h11V34h6v12h11V22h7L26 4z" fill="white"/></svg>
+      </div>
+      <div><div class="tb-name" id="bar-name">—</div><div class="tb-role" id="bar-shift">—</div></div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">Sign out</button>
+  </div>
+
+  <div class="main">
+
+    <!-- HOME -->
+    <div id="screen-home" class="screen active">
+      <div class="wb"><h2 id="welcome-msg">Welcome!</h2><p id="welcome-date">—</p></div>
+      <div class="sg">
+        <div class="sc"><div class="sl">Clock status</div><div class="sv" id="home-clk" style="font-size:14px;color:var(--g400);">Not clocked in</div><div class="ss" id="home-clk-t"></div></div>
+        <div class="sc"><div class="sl">Today</div><div class="sv" id="home-date" style="font-size:14px;">—</div></div>
+      </div>
+      <div class="st">Forms &amp; records</div>
+      <div class="ar" onclick="showScreen('clock');setNav('clock')">
+        <div class="ai" style="background:#e8f4fc;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#1a7abf" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg></div>
+        <div class="at"><h4>Clock in / out</h4><p>Record your shift</p></div><div class="aa">›</div>
+      </div>
+      <div class="ar" onclick="showScreen('carenotes');setNav('forms')">
+        <div class="ai" style="background:#f0fdf4;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+        <div class="at"><h4>Daily Care Notes</h4><p>Required daily for every resident</p></div><div class="aa">›</div>
+      </div>
+      <div class="ar" onclick="showScreen('wellness');setNav('forms')">
+        <div class="ai" style="background:#fffbeb;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+        <div class="at"><h4>Wellness notes</h4><p>Real-time health observations</p></div><div class="aa">›</div>
+      </div>
+      <div class="ar" onclick="showScreen('behavior');setNav('forms')">
+        <div class="ai" style="background:#fbeaf0;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#993556" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="at"><h4>Behavior Calendar</h4><p>Log behavioral episodes</p></div><div class="aa">›</div>
+      </div>
+      <div class="ar" onclick="showScreen('incident');setNav('incident')">
+        <div class="ai" style="background:#fef2f2;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div class="at"><h4>Incident report</h4><p>Document accidents &amp; incidents</p></div><div class="aa">›</div>
+      </div>
+      <div class="ar" onclick="showScreen('meeting');setNav('forms')">
+        <div class="ai" style="background:#e8f4fc;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#1a7abf" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div class="at"><h4>Monday Morning Meeting</h4><p>Weekly staff report</p></div><div class="aa">›</div>
+      </div>
+    </div>
+
+    <!-- CLOCK -->
+    <div id="screen-clock" class="screen">
+      <div class="ph">Clock in / out</div><div class="ps">Your shift time is recorded automatically.</div>
+      <div class="card">
+        <div class="cd">
+          <div class="ct2" id="live-clock">--:--</div>
+          <div class="cdate" id="live-date">—</div>
+          <div id="clk-badge" class="cs so"><div class="sd do" id="clk-dot"></div><span id="clk-txt">Not clocked in</span></div>
+        </div>
+        <div id="shift-det" style="display:none;">
+          <div class="fd"></div>
+          <div class="shi"><span class="shk">Clocked in at</span><span class="shv" id="ci-t">—</span></div>
+          <div class="shi"><span class="shk">Caregiver</span><span class="shv" id="ci-n">—</span></div>
+          <div class="shi"><span class="shk">Shift</span><span class="shv" id="ci-s">—</span></div>
+        </div>
+      </div>
+      <div id="btn-in"><button class="btn-p" onclick="clockIn()">Clock in</button></div>
+      <div id="btn-out" style="display:none;"><button class="btn-d" onclick="clockOut()">Clock out</button></div>
+      <div id="clk-sm" class="sm"><p id="clk-sm-txt">Clocked out successfully</p><span>Your time has been recorded in Google Sheets.</span></div>
+    </div>
+
+    <!-- CARE NOTES -->
+    <div id="screen-carenotes" class="screen">
+      <div class="ph">Daily Care Notes</div><div class="ps">Caregiver must complete a care note for every resident on every shift.</div>
+      <div class="card">
+        <label class="fl">Resident</label>
+        <select id="cn-res" class="mb"><option value="">— Select resident —</option></select>
+      </div>
+      <div class="card">
+        <div class="ct">Observations checklist</div>
+        <div class="ib">Tap Yes or No for each item.</div>
+        <div id="cn-list"></div>
+      </div>
+      <div class="card">
+        <label class="fl">Explain any YES items — were these reported to the ALM and/or Delegating Nurse?</label>
+        <textarea id="cn-notes" placeholder="Document observations, explanations, and any other changes here..." style="min-height:100px;" class="mb"></textarea>
+        <label class="fl">Your name</label>
+        <input type="text" id="cn-sig" class="mb" placeholder="Full name">
+      </div>
+      <button class="btn-p" onclick="submitForm('cn')">Submit care notes</button>
+      <div id="cn-sm" class="sm"><p>Care notes submitted!</p><span>Recorded to Google Sheets.</span></div>
+    </div>
+
+    <!-- WELLNESS NOTES -->
+    <div id="screen-wellness" class="screen">
+      <div class="ph">Wellness notes</div><div class="ps">Log real-time observations — date, time, and detail required.</div>
+      <div class="card">
+        <label class="fl">Resident</label>
+        <select id="wn-res" class="mb"><option value="">— Select resident —</option></select>
+        <div class="two-col mb">
+          <div><label class="fl">Date</label><input type="date" id="wn-date"></div>
+          <div><label class="fl">Time</label><input type="time" id="wn-time"></div>
+        </div>
+        <label class="fl">Wellness note</label>
+        <textarea id="wn-note" style="min-height:110px;" placeholder="Describe the observation in full detail..." class="mb"></textarea>
+        <label class="fl">Your name &amp; title</label>
+        <input type="text" id="wn-sig" placeholder="Full name and title" class="mb">
+      </div>
+      <button class="btn-p" onclick="submitForm('wn')">Submit wellness note</button>
+      <div id="wn-sm" class="sm"><p>Wellness note submitted!</p><span>Recorded to Google Sheets.</span></div>
+    </div>
+
+    <!-- BEHAVIOR CALENDAR -->
+    <div id="screen-behavior" class="screen">
+      <div class="ph">Behavior Calendar</div>
+      <div class="card">
+        <label class="fl">Resident</label>
+        <select id="beh-res" class="mb"><option value="">— Select resident —</option></select>
+        <label class="fl">Behavior observed</label>
+        <select id="beh-type" class="mb">
+          <option value="">— Select behavior —</option>
+          <option>Agitation</option>
+          <option>Hitting</option>
+          <option>Spitting</option>
+          <option>Pinching</option>
+          <option>Throwing objects</option>
+          <option>Refusing medications</option>
+          <option>Refusing to eat</option>
+          <option>Refusing to change depends</option>
+          <option>Foul language</option>
+        </select>
+        <label class="fl">Time of day</label>
+        <select id="beh-tod" class="mb">
+          <option value="">— Select time of day —</option>
+          <option>Morning</option>
+          <option>Afternoon</option>
+          <option>Evening</option>
+          <option>Night</option>
+        </select>
+        <label class="fl">Additional notes (optional)</label>
+        <textarea id="beh-notes" placeholder="Describe the episode, context, or any actions taken..." class="mb"></textarea>
+        <label class="fl">Your name</label>
+        <input type="text" id="beh-sig" class="mb" placeholder="Full name">
+      </div>
+      <button class="btn-p" onclick="submitForm('beh')">Submit behavior calendar</button>
+      <div id="beh-sm" class="sm"><p>Behavior Calendar submitted!</p><span>Recorded to Google Sheets.</span></div>
+    </div>
+
+    <!-- INCIDENT REPORT -->
+    <div id="screen-incident" class="screen">
+      <div class="ph">Incident Report</div><div class="ps">Complete within 24 hours. The ALM will be notified upon submission.</div>
+
+      <div class="st">Incident details</div>
+      <div class="card">
+        <label class="fl">Resident</label>
+        <select id="ir-res" class="mb"><option value="">— Select resident —</option></select>
+        <div class="two-col mb">
+          <div><label class="fl">Age</label><input type="text" id="ir-age" placeholder="Age"></div>
+          <div><label class="fl">Gender</label><select id="ir-gen"><option value="">Select</option><option>Male</option><option>Female</option></select></div>
+        </div>
+        <div class="two-col mb">
+          <div><label class="fl">Date</label><input type="date" id="ir-date"></div>
+          <div><label class="fl">Time</label><input type="time" id="ir-time"></div>
+        </div>
+        <label class="fl">Place of incident</label>
+        <select id="ir-place" class="mb">
+          <option value="">— Select location —</option>
+          <option>Resident room</option><option>Bathroom</option><option>Dining room</option>
+          <option>Common area / living room</option><option>Hallway</option><option>Outside / courtyard</option><option>Other</option>
+        </select>
+        <label class="fl">Individuals present</label>
+        <div class="two-col mb">
+          <input type="text" id="ir-p1" placeholder="1. Name">
+          <input type="text" id="ir-p2" placeholder="2. Name">
+          <input type="text" id="ir-p3" placeholder="3. Name">
+          <input type="text" id="ir-p4" placeholder="4. Name">
+        </div>
+        <label class="fl">Description of incident</label>
+        <textarea id="ir-desc" style="min-height:120px;" placeholder="Describe exactly what happened..." class="mb"></textarea>
+      </div>
+
+      <div class="st">Staff response</div>
+      <div class="card">
+        <label class="fl">Staff's initial response</label>
+        <textarea id="ir-resp" placeholder="What did you do immediately after?" class="mb"></textarea>
+        <div class="cr">
+          <span class="cl">Was first aid treatment necessary?</span>
+          <div class="co">
+            <button class="cb" onclick="selCheck(this,'y',-1);" data-name="ir-fa" data-val="Yes">Yes</button>
+            <button class="cb" onclick="selCheck(this,'n',-1);" data-name="ir-fa" data-val="No">No</button>
+          </div>
+        </div>
+        <div id="ir-fa-wrap" style="display:none;margin-top:10px;">
+          <label class="fl">If yes, what was rendered?</label>
+          <textarea id="ir-fa-d" placeholder="Describe first aid provided..." class="mb"></textarea>
+        </div>
+      </div>
+
+      <div class="st">Follow-up actions</div>
+      <div class="card">
+        <div class="cr">
+          <span class="cl">Was a physician called?</span>
+          <div class="co">
+            <button class="cb" onclick="irToggle(this,'y','ir-doc-wrap')" data-val="Yes">Yes</button>
+            <button class="cb" onclick="irToggle(this,'n','ir-doc-wrap')" data-val="No">No</button>
+          </div>
+        </div>
+        <div id="ir-doc-wrap" style="display:none;margin-top:10px;">
+          <label class="fl">Physician name</label><input type="text" id="ir-doc-w" placeholder="Physician name" class="mb">
+          <label class="fl">Time called</label><input type="time" id="ir-doc-t" class="mb">
+          <div class="cr" style="padding:0;margin-bottom:10px;">
+            <span class="cl">Orders received?</span>
+            <div class="co">
+              <button class="cb" onclick="irToggle(this,'y','ir-ord-wrap')" data-val="Yes">Yes</button>
+              <button class="cb" onclick="irToggle(this,'n','ir-ord-wrap')" data-val="No">No</button>
+            </div>
+          </div>
+          <div id="ir-ord-wrap" style="display:none;">
+            <label class="fl">What were the orders?</label>
+            <textarea id="ir-ord-d" placeholder="Describe orders..." class="mb"></textarea>
+          </div>
+        </div>
+        <div class="fd"></div>
+        <div class="cr">
+          <span class="cl">Was 911 called?</span>
+          <div class="co">
+            <button class="cb" onclick="irToggle(this,'y','ir-911-wrap')" data-val="Yes">Yes</button>
+            <button class="cb" onclick="irToggle(this,'n','ir-911-wrap')" data-val="No">No</button>
+          </div>
+        </div>
+        <div id="ir-911-wrap" style="display:none;margin-top:10px;">
+          <div class="two-col mb">
+            <div><label class="fl">Arrival time</label><input type="time" id="ir-911a"></div>
+            <div><label class="fl">Departure time</label><input type="time" id="ir-911d"></div>
+          </div>
+        </div>
+        <div class="fd"></div>
+        <div class="cr">
+          <span class="cl">Was resident taken to hospital?</span>
+          <div class="co">
+            <button class="cb" onclick="irToggle(this,'y','ir-hosp-wrap')" data-val="Yes">Yes</button>
+            <button class="cb" onclick="irToggle(this,'n','ir-hosp-wrap')" data-val="No">No</button>
+          </div>
+        </div>
+        <div id="ir-hosp-wrap" style="display:none;margin-top:10px;">
+          <label class="fl">Name of hospital</label><input type="text" id="ir-hosp-n" placeholder="Hospital name" class="mb">
+          <div class="cr" style="padding:0;margin-bottom:10px;">
+            <span class="cl">Was resident admitted?</span>
+            <div class="co">
+              <button class="cb" onclick="selIR(this,'y')" data-group="ir-adm" data-val="Yes">Yes</button>
+              <button class="cb" onclick="selIR(this,'n')" data-group="ir-adm" data-val="No">No</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st">Follow-up notifications</div>
+      <div class="card">
+        <div class="cr">
+          <span class="cl">a. Family or resident's rep. notified?</span>
+          <div class="co">
+            <button class="cb" onclick="irToggle(this,'y','ir-fam-wrap')" data-val="Yes">Yes</button>
+            <button class="cb" onclick="irToggle(this,'n','ir-fam-wrap')" data-val="No">No</button>
+          </div>
+        </div>
+        <div id="ir-fam-wrap" style="display:none;margin-top:10px;">
+          <label class="fl">Name of family member / rep. notified</label>
+          <input type="text" id="ir-fam-w" placeholder="Full name" class="mb">
+          <div class="two-col mb">
+            <div><label class="fl">Date notified</label><input type="date" id="ir-fam-d"></div>
+            <div><label class="fl">Time notified</label><input type="time" id="ir-fam-t"></div>
+          </div>
+        </div>
+        <div class="fd"></div>
+        <div class="cr">
+          <span class="cl">b. Health care practitioner notified?</span>
+          <div class="co">
+            <button class="cb" onclick="irToggle(this,'y','ir-hcp-wrap')" data-val="Yes">Yes</button>
+            <button class="cb" onclick="irToggle(this,'n','ir-hcp-wrap')" data-val="No">No</button>
+          </div>
+        </div>
+        <div id="ir-hcp-wrap" style="display:none;margin-top:10px;">
+          <label class="fl">Name of health care practitioner notified</label>
+          <input type="text" id="ir-hcp-w" placeholder="Full name" class="mb">
+          <div class="two-col mb">
+            <div><label class="fl">Date notified</label><input type="date" id="ir-hcp-d"></div>
+            <div><label class="fl">Time notified</label><input type="time" id="ir-hcp-t"></div>
+          </div>
+        </div>
+        <div class="fd"></div>
+        <div class="cr">
+          <span class="cl">c. Licensing authority or law enforcement notified?</span>
+          <div class="co">
+            <button class="cb" onclick="irToggle(this,'y','ir-law-wrap')" data-val="Yes">Yes</button>
+            <button class="cb" onclick="irToggle(this,'n','ir-law-wrap')" data-val="No">No</button>
+          </div>
+        </div>
+        <div id="ir-law-wrap" style="display:none;margin-top:10px;">
+          <label class="fl">Who &amp; from what agency?</label>
+          <input type="text" id="ir-law-w" placeholder="Name and agency" class="mb">
+        </div>
+      </div>
+
+      <div class="st">Investigation &amp; corrective measures</div>
+      <div class="card">
+        <div class="cr">
+          <span class="cl">Was the incident reported to the ALM?</span>
+          <div class="co">
+            <button class="cb" onclick="selIR(this,'y');document.getElementById('ir-inv-why-wrap').style.display='none';" data-val="Yes">Yes</button>
+            <button class="cb" onclick="selIR(this,'n');document.getElementById('ir-inv-why-wrap').style.display='block';" data-val="No">No</button>
+          </div>
+        </div>
+        <div id="ir-inv-why-wrap" style="display:none;margin-top:10px;">
+          <label class="fl">If no, why not?</label>
+          <textarea id="ir-inv-w" placeholder="Explain..." class="mb"></textarea>
+        </div>
+        <label class="fl" style="margin-top:4px;">Corrective measures taken or put in place</label>
+        <textarea id="ir-corr" placeholder="Describe corrective actions..." class="mb"></textarea>
+        <div class="fd"></div>
+        <label class="fl">Staff initiating report</label>
+        <input type="text" id="ir-sig" placeholder="Full name" class="mb">
+        <label class="fl">Name of assisted living program</label>
+        <input type="text" id="ir-prog" value="Second Home Senior Living" class="mb">
+      </div>
+      <button class="btn-d" onclick="submitForm('ir')">Submit incident report</button>
+      <div id="ir-sm" class="sm"><p>Incident report submitted!</p><span>The ALM has been notified. Report recorded in Google Sheets.</span></div>
+    </div>
+
+    <!-- MONDAY MEETING -->
+    <div id="screen-meeting" class="screen">
+      <div class="ph">Monday Morning Meeting</div><div class="ps">Report on all Residents from the prior week.</div>
+      <div class="card">
+        <label class="fl">Staff completing this form</label>
+        <input type="text" id="mm-staff" class="mb" readonly style="background:var(--g100);color:var(--g600);cursor:not-allowed;">
+        <label class="fl">Date range covered</label>
+        <div class="two-col mb">
+          <div><label class="fl">From</label><input type="date" id="mm-date-from"></div>
+          <div><label class="fl">To</label><input type="date" id="mm-date-to"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct">Resident updates</div>
+        <div class="ib">Select each resident from the dropdown and write an update below. Leave blank if there is no update.</div>
+        <div id="mm-res-fields"></div>
+      </div>
+      <button class="btn-p" onclick="submitForm('mm')">Submit morning meeting form</button>
+      <div id="mm-sm" class="sm"><p>Morning meeting submitted!</p><span>Recorded to Google Sheets.</span></div>
+    </div>
+
+  </div>
+
+  <div class="bnav">
+    <button class="nb active" id="nav-home" onclick="showScreen('home');setNav('home')">
+      <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
+    </button>
+  </div>
+</div>
+
+<script>
+const RESIDENTS=['Susan T.','Gwen B.','Thomas B.','Karen H.','Marita M.','Grace H.','Elsa M.'];
+const CN_ITEMS=['Changes in medication?','Changes in food intake?','Changes in behavior?','Changes in mental status?','Falls?','Skin issues?','Constipation issues?','Insomnia problems?','Hospitalizations / ER visits?','Doctor appointments?','Other changes to care?'];
+const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const PERIODS=['Morning','Afternoon','Evening','Night'];
+const SHEET_URL='YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+
+let clockedIn=false,clockInTime=null,currentUser='',currentShift='';
+let tallies={};
+
+const drums={};
+
+function getShiftLabel(){return '';}
+
+function doLogin(){
+  const n=document.getElementById('login-name').value;
+  if(!n){alert('Please select your name.');return;}
+  currentUser=n;
+  currentShift='';
+  document.getElementById('bar-name').textContent=n;
+  document.getElementById('bar-shift').textContent='Second Home Senior Living';
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  populateResidents();
+  buildChecklist();
+  buildBehaviorGrid();
+  buildMeetingFields();
+  prefillUser();
+  updateHomeDate();
+  startClock();
+}
+
+function doLogout(){
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-name').value='';
+  document.getElementById('login-shift').value='';
+  clockedIn=false;clockInTime=null;
+}
+
+function populateResidents(){
+  ['cn-res','wn-res','beh-res','ir-res'].forEach(id=>{
+    const sel=document.getElementById(id);
+    sel.innerHTML='<option value="">— Select resident —</option>';
+    RESIDENTS.forEach(r=>{const o=document.createElement('option');o.textContent=r;sel.appendChild(o);});
+  });
+}
+
+function prefillUser(){
+  ['cn-sig','wn-sig','beh-sig','ir-sig','mm-staff'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value=currentUser;
+  });
+  const now=new Date();
+  document.getElementById('wn-date').valueAsDate=now;
+  document.getElementById('ir-date').valueAsDate=now;
+  document.getElementById('wn-time').value=now.toTimeString().slice(0,5);
+  document.getElementById('ir-time').value=now.toTimeString().slice(0,5);
+}
+
+function updateHomeDate(){
+  const now=new Date();
+  const h=now.getHours();
+  const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('welcome-msg').textContent=g+', '+currentUser.split(' ')[0]+'!';
+  document.getElementById('welcome-date').textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+' · '+currentShift;
+  document.getElementById('home-date').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+function startClock(){
+  function tick(){
+    const now=new Date();
+    const tEl=document.getElementById('live-clock');
+    const dEl=document.getElementById('live-date');
+    if(tEl) tEl.textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    if(dEl) dEl.textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  }
+  tick();
+  if(window._clockInterval) clearInterval(window._clockInterval);
+  window._clockInterval=setInterval(tick,1000);
+}
+
+function clockIn(){
+  clockedIn=true;clockInTime=new Date();
+  const ts=clockInTime.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('clk-badge').className='cs si';
+  document.getElementById('clk-dot').className='sd di';
+  document.getElementById('clk-txt').textContent='Clocked in';
+  document.getElementById('shift-det').style.display='block';
+  document.getElementById('ci-t').textContent=ts;
+  document.getElementById('ci-n').textContent=currentUser;
+  document.getElementById('ci-s').textContent=currentShift;
+  document.getElementById('btn-in').style.display='none';
+  document.getElementById('btn-out').style.display='block';
+  document.getElementById('home-clk').textContent='Clocked in';
+  document.getElementById('home-clk').style.color='var(--success)';
+  document.getElementById('home-clk-t').textContent=ts;
+  send({form:'Clock Record',caregiver:currentUser,shift:currentShift,action:'Clock In',timestamp:clockInTime.toISOString()});
+}
+
+function clockOut(){
+  const out=new Date();
+  const ms=out-clockInTime;
+  const hrs=Math.floor(ms/3600000),mins=Math.floor((ms%3600000)/60000);
+  document.getElementById('clk-badge').className='cs so';
+  document.getElementById('clk-dot').className='sd do';
+  document.getElementById('clk-txt').textContent='Clocked out';
+  document.getElementById('btn-out').style.display='none';
+  document.getElementById('btn-in').style.display='block';
+  const msg=document.getElementById('clk-sm-txt');
+  msg.textContent='Clocked out — shift: '+hrs+'h '+mins+'m';
+  document.getElementById('clk-sm').className='sm show';
+  document.getElementById('home-clk').textContent='Clocked out';
+  document.getElementById('home-clk').style.color='var(--g400)';
+  send({form:'Clock Record',caregiver:currentUser,shift:currentShift,action:'Clock Out',clockIn:clockInTime.toISOString(),clockOut:out.toISOString(),duration:hrs+'h '+mins+'m'});
+  clockedIn=false;
+}
+
+function showScreen(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+n).classList.add('active');
+  if(n==='clock') startClock();
+}
+function setNav(n){document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));const el=document.getElementById('nav-'+n);if(el)el.classList.add('active');}
+
+function buildChecklist(){
+  const c=document.getElementById('cn-list');c.innerHTML='';
+  const incidentTriggers=['Falls?','Hospitalizations / ER visits?'];
+  CN_ITEMS.forEach((item,i)=>{
+    const row=document.createElement('div');row.className='cr';
+    row.innerHTML=`<span class="cl">${item}</span><div class="co">
+      <button class="cb" onclick="selCheck(this,'y',${i})" data-i="${i}">Yes</button>
+      <button class="cb" onclick="selCheck(this,'n',${i})" data-i="${i}">No</button>
+    </div>`;
+    c.appendChild(row);
+    if(incidentTriggers.includes(item)){
+      const prompt=document.createElement('div');
+      prompt.id='ir-prompt-'+i;
+      prompt.style.cssText='display:none;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:10px 12px;margin:6px 0 10px;font-size:13px;color:#991b1b;line-height:1.5;';
+      prompt.innerHTML=`<strong style="display:block;margin-bottom:4px;">⚠ Incident report required</strong>A "${item.replace('?','')}" event must be documented. Please complete an incident report after submitting this care note.<br><button onclick="showScreen('incident');setNav('incident')" style="margin-top:8px;background:#dc2626;color:white;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Go to incident report →</button>`;
+      c.appendChild(prompt);
+    }
+  });
+}
+
+function irToggle(btn, v, showId){
+  btn.parentElement.querySelectorAll('.cb').forEach(b=>b.className='cb');
+  btn.classList.add('s'+v);
+  const wrap=document.getElementById(showId);
+  if(wrap) wrap.style.display=(v==='y')?'block':'none';
+  if(v==='n'){
+    const alt=showId.replace('-wrap','-why-wrap').replace('-res-wrap','-why-wrap');
+    const altEl=document.getElementById(alt);
+    const altEl2=document.getElementById(showId.replace('-why-wrap','-res-wrap'));
+    if(altEl && altEl!==wrap) altEl.style.display='none';
+    if(altEl2 && altEl2!==wrap) altEl2.style.display='none';
+  }
+}
+function selIR(btn,v){
+  btn.parentElement.querySelectorAll('.cb').forEach(b=>b.className='cb');
+  btn.classList.add('s'+v);
+}
+function selCheck(btn,v,i){
+  btn.parentElement.querySelectorAll('.cb').forEach(b=>b.className='cb');
+  btn.classList.add('s'+v);
+  const incidentTriggers=['Falls?','Hospitalizations / ER visits?'];
+  const item=CN_ITEMS[i];
+  if(incidentTriggers.includes(item)){
+    const prompt=document.getElementById('ir-prompt-'+i);
+    if(prompt) prompt.style.display=(v==='y')?'block':'none';
+  }
+}
+
+function getChecklist(){
+  const rows=document.getElementById('cn-list').querySelectorAll('.cr');
+  const r={};
+  rows.forEach((row,i)=>{
+    const sel=row.querySelector('.cb.sy,.cb.sn');
+    r[CN_ITEMS[i]]=sel?(sel.classList.contains('sy')?'YES':'NO'):'—';
+  });
+  return r;
+}
+
+function buildBehaviorGrid(){
+  const c=document.getElementById('beh-grid');
+  if(!c) return;
+  c.innerHTML='';tallies={};
+  PERIODS.forEach(period=>{
+    const lbl=document.createElement('div');
+    lbl.style.cssText='font-size:11px;font-weight:700;color:var(--g600);text-transform:uppercase;letter-spacing:.05em;margin:10px 0 6px;';
+    lbl.textContent=period;c.appendChild(lbl);
+    const g=document.createElement('div');g.className='tg';
+    DAYS.forEach(d=>{const h=document.createElement('div');h.className='th';h.textContent=d;g.appendChild(h);});
+    DAYS.forEach(d=>{
+      const k=period+'_'+d;tallies[k]=0;
+      const cell=document.createElement('div');cell.className='tc';
+      cell.id='tc-'+k;
+      cell.innerHTML=`<span class="tper">${d}</span><span class="tn" id="tv-${k}">0</span><span class="tp">+</span>`;
+      cell.onclick=()=>{tallies[k]++;document.getElementById('tv-'+k).textContent=tallies[k];};
+      g.appendChild(cell);
+    });
+    c.appendChild(g);
+  });
+}
+
+function resetTallies(){buildBehaviorGrid();}
+
+function buildMeetingFields(){
+  const c=document.getElementById('mm-res-fields');c.innerHTML='';
+  RESIDENTS.forEach((r,i)=>{
+    const w=document.createElement('div');
+    w.style.cssText='margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--g100);';
+    if(i===RESIDENTS.length-1) w.style.borderBottom='none';
+    const uid='mm_'+i;
+    const opts=RESIDENTS.map(res=>`<option value="${res}"${res===r?' selected':''}>${res}</option>`).join('');
+    w.innerHTML=`
+      <label class="fl">Resident</label>
+      <select id="mmsel-${uid}" class="mb">${opts}</select>
+      <label class="fl">Update</label>
+      <textarea id="mmr-${uid}" style="width:100%;min-height:80px;padding:10px 12px;border:1.5px solid var(--g200);border-radius:8px;font-size:14px;font-family:inherit;line-height:1.5;resize:vertical;" placeholder="Write update or leave blank if there is no update."></textarea>`;
+    c.appendChild(w);
+  });
+}
+
+function send(data){
+  if(SHEET_URL==='YOUR_GOOGLE_APPS_SCRIPT_URL_HERE')return;
+  fetch(SHEET_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(data)}).catch(()=>{});
+}
+
+function showSuccess(id){
+  const el=document.getElementById(id+'-sm');
+  el.className='sm show';
+  setTimeout(()=>{el.className='sm';},5000);
+}
+
+function submitForm(type){
+  if(type==='cn'){
+    const res=document.getElementById('cn-res').value;
+    if(!res){alert('Please select a resident.');return;}
+    send({form:'Daily Care Notes',caregiver:currentUser,timestamp:new Date().toISOString(),
+      resident:res,checklist:JSON.stringify(getChecklist()),
+      notes:document.getElementById('cn-notes').value,signer:document.getElementById('cn-sig').value});
+    showSuccess('cn');
+  } else if(type==='wn'){
+    const res=document.getElementById('wn-res').value;
+    if(!res){alert('Please select a resident.');return;}
+    send({form:'Wellness Notes',caregiver:currentUser,timestamp:new Date().toISOString(),
+      resident:res,date:document.getElementById('wn-date').value,
+      time:document.getElementById('wn-time').value,
+      note:document.getElementById('wn-note').value,signer:document.getElementById('wn-sig').value});
+    showSuccess('wn');
+  } else if(type==='beh'){
+    const res=document.getElementById('beh-res').value;
+    if(!res){alert('Please select a resident.');return;}
+    const btype=document.getElementById('beh-type').value;
+    if(!btype){alert('Please select a behavior.');return;}
+    const tod=document.getElementById('beh-tod').value;
+    if(!tod){alert('Please select a time of day.');return;}
+    send({form:'Behavior Calendar',caregiver:currentUser,timestamp:new Date().toISOString(),
+      resident:res,behavior:btype,timeOfDay:tod,
+      notes:document.getElementById('beh-notes').value,signer:document.getElementById('beh-sig').value});
+    showSuccess('beh');
+  } else if(type==='ir'){
+    const res=document.getElementById('ir-res').value;
+    if(!res){alert('Please select a resident.');return;}
+    const g=id=>(document.getElementById(id)||{}).value||'';
+    const gb=grp=>{const b=document.querySelector(`button[data-group="${grp}"].sy,button[data-group="${grp}"].sn`);return b?b.dataset.val:'';}
+    const gcb=wrap=>{const b=document.querySelector(`#${wrap} .cb.sy,#${wrap} .cb.sn`);return b?(b.classList.contains('sy')?'Yes':'No'):'';}
+    const faBtn=document.querySelector('#screen-incident .card:nth-of-type(2) .cb.sy,#screen-incident .card:nth-of-type(2) .cb.sn');
+    send({form:'Incident Report',caregiver:currentUser,timestamp:new Date().toISOString(),
+      resident:res,age:g('ir-age'),gender:g('ir-gen'),
+      date:g('ir-date'),time:g('ir-time'),place:g('ir-place'),
+      persons:[g('ir-p1'),g('ir-p2'),g('ir-p3'),g('ir-p4')].filter(Boolean).join('; '),
+      description:g('ir-desc'),staffResponse:g('ir-resp'),
+      firstAid:faBtn?(faBtn.classList.contains('sy')?'Yes':'No'):'',
+      firstAidDesc:g('ir-fa-d'),
+      physicianCalled:document.querySelector('#screen-incident [onclick*="ir-doc-wrap"].sy')?'Yes':document.querySelector('#screen-incident [onclick*="ir-doc-wrap"].sn')?'No':'',
+      physicianName:g('ir-doc-w'),physicianTimeCalled:g('ir-doc-t'),
+      ordersReceived:document.querySelector('#screen-incident [onclick*="ir-ord-wrap"].sy')?'Yes':document.querySelector('#screen-incident [onclick*="ir-ord-wrap"].sn')?'No':'',
+      ordersDesc:g('ir-ord-d'),
+      called911:document.querySelector('#screen-incident [onclick*="ir-911-wrap"].sy')?'Yes':document.querySelector('#screen-incident [onclick*="ir-911-wrap"].sn')?'No':'',
+      arrival911:g('ir-911a'),depart911:g('ir-911d'),
+      hospitalTransport:document.querySelector('#screen-incident [onclick*="ir-hosp-wrap"].sy')?'Yes':document.querySelector('#screen-incident [onclick*="ir-hosp-wrap"].sn')?'No':'',
+      hospitalName:g('ir-hosp-n'),
+      admitted:document.querySelector('#ir-hosp-wrap .cb.sy')?'Yes':document.querySelector('#ir-hosp-wrap .cb.sn')?'No':'',
+      familyNotified:document.querySelector('#screen-incident [onclick*="ir-fam-wrap"].sy')?'Yes':document.querySelector('#screen-incident [onclick*="ir-fam-wrap"].sn')?'No':'',
+      familyWho:g('ir-fam-w'),familyDate:g('ir-fam-d'),familyTime:g('ir-fam-t'),
+      hcpNotified:document.querySelector('#screen-incident [onclick*="ir-hcp-wrap"].sy')?'Yes':document.querySelector('#screen-incident [onclick*="ir-hcp-wrap"].sn')?'No':'',
+      hcpWho:g('ir-hcp-w'),hcpDate:g('ir-hcp-d'),hcpTime:g('ir-hcp-t'),
+      lawNotified:document.querySelector('#screen-incident [onclick*="ir-law-wrap"].sy')?'Yes':document.querySelector('#screen-incident [onclick*="ir-law-wrap"].sn')?'No':'',
+      lawWho:g('ir-law-w'),
+      investigation:document.querySelector('#screen-incident [onclick*="ir-inv-res-wrap"].sy')?'Yes':document.querySelector('#screen-incident [onclick*="ir-inv-why-wrap"].sn')?'No':'',
+      invWhy:g('ir-inv-w'),invResult:g('ir-inv-r'),
+      corrective:g('ir-corr'),staffSig:g('ir-sig'),program:g('ir-prog')});
+    showSuccess('ir');
+  } else if(type==='mm'){
+    const updates={};
+    RESIDENTS.forEach((r,i)=>{
+      const uid='mm_'+i;
+      const sel=document.getElementById('mmsel-'+uid);
+      const ta=document.getElementById('mmr-'+uid);
+      const resName=sel?sel.value:r;
+      if(ta) updates[resName]=ta.value;
+    });
+    send({form:'Monday Morning Meeting',caregiver:currentUser,timestamp:new Date().toISOString(),
+      staff:document.getElementById('mm-staff').value,
+      dateFrom:document.getElementById('mm-date-from').value,
+      dateTo:document.getElementById('mm-date-to').value,updates:JSON.stringify(updates)});
+    showSuccess('mm');
+  }
+}
+</script>
+</body>
+</html>
