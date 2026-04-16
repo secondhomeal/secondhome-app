@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -141,23 +142,23 @@ textarea{resize:vertical;min-height:80px;line-height:1.5;}
         <div class="ai" style="background:#e8f4fc;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#1a7abf" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg></div>
         <div class="at"><h4>Clock in / out</h4><p>Record your shift</p></div><div class="aa">›</div>
       </div>
-      <div class="ar" onclick="showScreen('carenotes');setNav('forms')">
+      <div class="ar" id="cn-tile" onclick="openCareNotes()" style="opacity:0.4;pointer-events:none;">
         <div class="ai" style="background:#f0fdf4;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
-        <div class="at"><h4>Daily Care Notes</h4><p>Required daily for every resident</p></div><div class="aa">›</div>
+        <div class="at"><h4>Daily Care Notes</h4><p id="cn-tile-sub">Clock in first to complete notes</p></div><div class="aa">›</div>
       </div>
-      <div class="ar" onclick="showScreen('wellness');setNav('forms')">
+      <div class="ar" id="wn-tile" onclick="showScreen('wellness');setNav('forms')" style="opacity:0.4;pointer-events:none;">
         <div class="ai" style="background:#fffbeb;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
         <div class="at"><h4>Wellness notes</h4><p>Real-time health observations</p></div><div class="aa">›</div>
       </div>
-      <div class="ar" onclick="showScreen('behavior');setNav('forms')">
+      <div class="ar" id="beh-tile" onclick="showScreen('behavior');setNav('forms')" style="opacity:0.4;pointer-events:none;">
         <div class="ai" style="background:#fbeaf0;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#993556" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
         <div class="at"><h4>Behavior Calendar</h4><p>Log behavioral episodes</p></div><div class="aa">›</div>
       </div>
-      <div class="ar" onclick="showScreen('incident');setNav('incident')">
+      <div class="ar" id="ir-tile" onclick="showScreen('incident');setNav('incident')" style="opacity:0.4;pointer-events:none;">
         <div class="ai" style="background:#fef2f2;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
         <div class="at"><h4>Incident report</h4><p>Document accidents &amp; incidents</p></div><div class="aa">›</div>
       </div>
-      <div class="ar" onclick="showScreen('meeting');setNav('forms')">
+      <div class="ar" id="mm-tile" onclick="showScreen('meeting');setNav('forms')" style="opacity:0.4;pointer-events:none;">
         <div class="ai" style="background:#e8f4fc;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#1a7abf" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
         <div class="at"><h4>Monday Morning Meeting</h4><p>Weekly staff report</p></div><div class="aa">›</div>
       </div>
@@ -180,7 +181,13 @@ textarea{resize:vertical;min-height:80px;line-height:1.5;}
         </div>
       </div>
       <div id="btn-in"><button class="btn-p" onclick="clockIn()">Clock in</button></div>
-      <div id="btn-out" style="display:none;"><button class="btn-d" onclick="clockOut()">Clock out</button></div>
+      <div id="btn-out" style="display:none;">
+        <div id="co-warning" style="display:none;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:12px 14px;margin-bottom:12px;">
+          <p style="font-size:13px;font-weight:700;color:#991b1b;margin-bottom:6px;">Cannot clock out — care notes missing for:</p>
+          <ul id="co-missing-list" style="font-size:13px;color:#991b1b;padding-left:18px;margin:0;"></ul>
+        </div>
+        <button class="btn-d" id="btn-out-action" onclick="clockOut()">Clock out</button>
+      </div>
       <div id="clk-sm" class="sm"><p id="clk-sm-txt">Clocked out successfully</p><span>Your time has been recorded in Google Sheets.</span></div>
     </div>
 
@@ -480,6 +487,46 @@ const SHEET_URL='YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
 
 let clockedIn=false,clockInTime=null,currentUser='',currentShift='';
 let tallies={};
+let completedNotes=new Set();
+let cameFromCareNotes=false;
+
+function openCareNotes(){
+  if(!clockedIn){return;}
+  showScreen('carenotes');setNav('forms');
+}
+
+function updateCNTile(){
+  const tile=document.getElementById('cn-tile');
+  const sub=document.getElementById('cn-tile-sub');
+  if(!clockedIn){
+    tile.style.opacity='0.4';
+    tile.style.pointerEvents='none';
+    sub.textContent='Clock in first to complete notes';
+  } else {
+    tile.style.opacity='1';
+    tile.style.pointerEvents='auto';
+    const done=completedNotes.size;
+    const total=RESIDENTS.length;
+    sub.textContent=done===total?'All notes complete ✓':done+' of '+total+' notes completed';
+  }
+}
+
+function checkClockOut(){
+  const missing=RESIDENTS.filter(r=>!completedNotes.has(r));
+  const btn=document.getElementById('btn-out-action');
+  const warning=document.getElementById('co-warning');
+  const list=document.getElementById('co-missing-list');
+  if(missing.length===0){
+    btn.style.opacity='1';
+    btn.style.pointerEvents='auto';
+    warning.style.display='none';
+  } else {
+    btn.style.opacity='0.4';
+    btn.style.pointerEvents='none';
+    warning.style.display='block';
+    list.innerHTML=missing.map(r=>`<li>${r}</li>`).join('');
+  }
+}
 
 const drums={};
 
@@ -512,11 +559,25 @@ function doLogout(){
 }
 
 function populateResidents(){
-  ['cn-res','wn-res','beh-res','ir-res'].forEach(id=>{
+  ['wn-res','beh-res','ir-res'].forEach(id=>{
     const sel=document.getElementById(id);
     sel.innerHTML='<option value="">— Select resident —</option>';
     RESIDENTS.forEach(r=>{const o=document.createElement('option');o.textContent=r;sel.appendChild(o);});
   });
+  refreshCNDropdown();
+}
+
+function refreshCNDropdown(){
+  const sel=document.getElementById('cn-res');
+  const current=sel.value;
+  sel.innerHTML='<option value="">— Select resident —</option>';
+  const remaining=RESIDENTS.filter(r=>!completedNotes.has(r));
+  if(remaining.length===0){
+    sel.innerHTML='<option value="">All notes completed!</option>';
+  } else {
+    remaining.forEach(r=>{const o=document.createElement('option');o.textContent=r;sel.appendChild(o);});
+    if(remaining.includes(current)) sel.value=current;
+  }
 }
 
 function prefillUser(){
@@ -554,6 +615,7 @@ function startClock(){
 
 function clockIn(){
   clockedIn=true;clockInTime=new Date();
+  completedNotes=new Set();
   const ts=clockInTime.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
   document.getElementById('clk-badge').className='cs si';
   document.getElementById('clk-dot').className='sd di';
@@ -567,6 +629,13 @@ function clockIn(){
   document.getElementById('home-clk').textContent='Clocked in';
   document.getElementById('home-clk').style.color='var(--success)';
   document.getElementById('home-clk-t').textContent=ts;
+  document.getElementById('clk-sm').className='sm';
+  updateCNTile();
+  checkClockOut();
+  ['wn-tile','beh-tile','ir-tile','mm-tile'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.style.opacity='1';el.style.pointerEvents='auto';}
+  });
   send({form:'Clock Record',caregiver:currentUser,shift:currentShift,action:'Clock In',timestamp:clockInTime.toISOString()});
 }
 
@@ -609,7 +678,7 @@ function buildChecklist(){
       const prompt=document.createElement('div');
       prompt.id='ir-prompt-'+i;
       prompt.style.cssText='display:none;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:10px 12px;margin:6px 0 10px;font-size:13px;color:#991b1b;line-height:1.5;';
-      prompt.innerHTML=`<strong style="display:block;margin-bottom:4px;">⚠ Incident report required</strong>A "${item.replace('?','')}" event must be documented. Please complete an incident report after submitting this care note.<br><button onclick="showScreen('incident');setNav('incident')" style="margin-top:8px;background:#dc2626;color:white;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Go to incident report →</button>`;
+      prompt.innerHTML=`<strong style="display:block;margin-bottom:4px;">⚠ Incident report required</strong>A "${item.replace('?','')}" event must be documented. Please complete an incident report after submitting this care note.<br><button onclick="cameFromCareNotes=true;showScreen('incident');setNav('incident')" style="margin-top:8px;background:#dc2626;color:white;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Go to incident report →</button>`;
       c.appendChild(prompt);
     }
   });
@@ -712,7 +781,15 @@ function submitForm(type){
     send({form:'Daily Care Notes',caregiver:currentUser,timestamp:new Date().toISOString(),
       resident:res,checklist:JSON.stringify(getChecklist()),
       notes:document.getElementById('cn-notes').value,signer:document.getElementById('cn-sig').value});
+    completedNotes.add(res);
+    refreshCNDropdown();
+    updateCNTile();
+    checkClockOut();
     showSuccess('cn');
+    document.getElementById('cn-res').value='';
+    document.getElementById('cn-notes').value='';
+    document.querySelectorAll('#cn-list .cb').forEach(b=>b.className='cb');
+    document.querySelectorAll('[id^="ir-prompt-"]').forEach(p=>p.style.display='none');
   } else if(type==='wn'){
     const res=document.getElementById('wn-res').value;
     if(!res){alert('Please select a resident.');return;}
@@ -765,6 +842,10 @@ function submitForm(type){
       invWhy:g('ir-inv-w'),invResult:g('ir-inv-r'),
       corrective:g('ir-corr'),staffSig:g('ir-sig'),program:g('ir-prog')});
     showSuccess('ir');
+    if(cameFromCareNotes){
+      cameFromCareNotes=false;
+      setTimeout(()=>{showScreen('carenotes');setNav('forms');},2500);
+    }
   } else if(type==='mm'){
     const updates={};
     RESIDENTS.forEach((r,i)=>{
