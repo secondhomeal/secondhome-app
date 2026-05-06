@@ -190,8 +190,8 @@ textarea{resize:vertical;min-height:80px;line-height:1.5;}
         <label class="fl">Your name</label>
         <input type="text" id="cn-sig" class="mb" placeholder="Full name">
       </div>
-      <button class="btn-p" onclick="submitForm('cn')">Submit care notes</button>
-      <div id="cn-sm" class="sm"><p>Care notes submitted!</p><span>Recorded to Google Sheets.</span></div>
+      <button class="btn-p" id="cn-submit-btn" onclick="submitForm('cn')">Submit care notes</button>
+      <div id="cn-sm" class="sm"><p>✓ Care note submitted!</p><span>Recorded to Google Sheets.</span></div>
     </div>
 
     <!-- WELLNESS NOTES -->
@@ -717,6 +717,14 @@ function submitForm(type){
     updateCNTile();
     checkClockOut();
     showSuccess('cn');
+    const btn=document.getElementById('cn-submit-btn');
+    btn.style.background='var(--success)';
+    btn.style.transition='background 0.3s';
+    btn.textContent='✓ Care note submitted!';
+    setTimeout(()=>{
+      btn.style.background='var(--brand)';
+      btn.textContent='Submit care notes';
+    },4000);
     document.getElementById('cn-res').value='';
     document.getElementById('cn-notes').value='';
     document.querySelectorAll('#cn-list .cb').forEach(b=>b.className='cb');
