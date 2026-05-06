@@ -191,7 +191,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.5;}
         <input type="text" id="cn-sig" class="mb" placeholder="Full name">
       </div>
       <button class="btn-p" id="cn-submit-btn" onclick="submitForm('cn')">Submit care notes</button>
-      <div id="cn-sm" class="sm"><p>✓ Care note submitted!</p><span>Recorded to Google Sheets.</span></div>
+      <div id="cn-sm" class="sm" style="display:none;"></div>
     </div>
 
     <!-- WELLNESS NOTES -->
@@ -720,7 +720,7 @@ function submitForm(type){
     const btn=document.getElementById('cn-submit-btn');
     btn.style.background='var(--success)';
     btn.style.transition='background 0.3s';
-    btn.textContent='✓ Care note submitted!';
+    btn.textContent='✓ Care note submitted successfully!';
     setTimeout(()=>{
       btn.style.background='var(--brand)';
       btn.textContent='Submit care notes';
