@@ -1,23 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Second Home Senior Living — Staff App</title>
+<style>
+:root{--brand:#1a7abf;--brand-dark:#0e5a8f;--brand-light:#e8f4fc;--white:#fff;--g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g400:#94a3b8;--g600:#475569;--g800:#1e293b;--danger:#dc2626;--danger-l:#fef2f2;--success:#16a34a;--success-l:#f0fdf4;--warning:#d97706;--warning-l:#fffbeb;--r:12px;--rs:8px;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--g50);color:var(--g800);min-height:100vh;}
+#login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;background:var(--white);}
+.login-card{width:100%;max-width:360px;}
+label.fl{font-size:12px;font-weight:700;color:var(--g600);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;display:block;}
+select,input[type=text],input[type=date],input[type=time],textarea{width:100%;padding:11px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:15px;color:var(--g800);background:var(--white);appearance:none;font-family:inherit;transition:border-color .15s;}
+select:focus,input:focus,textarea:focus{outline:none;border-color:var(--brand);}
+textarea{resize:vertical;min-height:80px;line-height:1.5;}
+.mb{margin-bottom:14px;}
+.btn-p{display:block;width:100%;padding:13px;background:var(--brand);color:white;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn-p:active{background:var(--brand-dark);}
+.btn-d{display:block;width:100%;padding:13px;background:var(--danger);color:white;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+#app{display:none;flex-direction:column;min-height:100vh;}
+.top-bar{background:var(--brand);padding:14px 16px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.tb-name{color:white;font-size:13px;font-weight:700;}
+.tb-role{color:rgba(255,255,255,.7);font-size:11px;}
+.logout-btn{background:rgba(255,255,255,.15);border:none;color:white;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+.main{flex:1;padding:16px;padding-bottom:86px;}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--g200);display:flex;z-index:100;}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 8px;background:none;border:none;cursor:pointer;color:var(--g400);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-family:inherit;}
+.nb.active{color:var(--brand);}
+.ni{width:22px;height:22px;}
+.screen{display:none;}.screen.active{display:block;}
+.card{background:white;border-radius:var(--r);border:1px solid var(--g200);padding:16px;margin-bottom:14px;}
+.ct{font-size:14px;font-weight:700;color:var(--g800);margin-bottom:12px;}
+.st{font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.07em;margin:20px 0 10px;}
+.wb{background:var(--brand);color:white;border-radius:var(--r);padding:16px;margin-bottom:16px;}
+.wb h2{font-size:18px;font-weight:700;margin-bottom:2px;}
+.wb p{font-size:13px;opacity:.8;}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.sc{background:white;border:1px solid var(--g200);border-radius:var(--r);padding:14px;}
+.sl{font-size:11px;color:var(--g400);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.sv{font-size:22px;font-weight:700;color:var(--g800);}
+.ar{display:flex;align-items:center;gap:12px;padding:13px 14px;background:white;border:1px solid var(--g200);border-radius:var(--r);margin-bottom:10px;cursor:pointer;}
+.ar:active{background:var(--g50);}
+.ai{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.at h4{font-size:14px;font-weight:700;color:var(--g800);}
+.at p{font-size:12px;color:var(--g400);margin-top:1px;}
+.aa{margin-left:auto;color:var(--g400);font-size:20px;line-height:1;}
+.cd{text-align:center;padding:24px 0 20px;}
+.ct2{font-size:42px;font-weight:700;color:var(--g800);font-variant-numeric:tabular-nums;}
+.cdate{font-size:14px;color:var(--g400);margin-top:4px;}
+.cs{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;}
+.si{background:var(--success-l);color:var(--success);}
+.so{background:var(--g100);color:var(--g600);}
+.sd{width:8px;height:8px;border-radius:50%;}
+.di{background:var(--success);}
+.do{background:var(--g400);}
+.shi{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--g100);font-size:14px;}
+.shi:last-child{border-bottom:none;}
+.shk{color:var(--g600);}
+.shv{font-weight:700;color:var(--g800);}
+.cr{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--g100);}
+.cr:last-child{border-bottom:none;}
+.cl{font-size:13px;color:var(--g800);flex:1;padding-right:8px;}
+.co{display:flex;gap:5px;}
+.cb{padding:5px 9px;border:1.5px solid var(--g200);border-radius:6px;font-size:12px;font-weight:700;background:white;cursor:pointer;color:var(--g600);transition:all .1s;font-family:inherit;}
+.cb.sy{border-color:var(--danger);background:var(--danger-l);color:var(--danger);}
+.cb.sn{border-color:var(--success);background:var(--success-l);color:var(--success);}
+.cb.sa{border-color:var(--brand);background:var(--brand-light);color:var(--brand-dark);}
+.fd{height:1px;background:var(--g100);margin:16px 0;}
+.ib{background:var(--brand-light);border-radius:var(--rs);padding:10px 12px;margin-bottom:14px;font-size:13px;color:var(--brand-dark);line-height:1.5;}
+.sm{background:var(--success-l);border-radius:var(--rs);padding:14px;text-align:center;display:none;margin-top:12px;}
+.sm.show{display:block;}
+.sm p{color:var(--success);font-weight:700;font-size:15px;margin-bottom:4px;}
+.sm span{color:var(--g600);font-size:13px;}
+.ph{font-size:20px;font-weight:700;color:var(--g800);margin-bottom:4px;}
+.ps{font-size:13px;color:var(--g400);margin-bottom:16px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+</style>
+</head>
+<body>
 
-<!doctype html><html data-build-id="a973a722bb" data-git-hash="fa3e4426284078a17cff66fe451f19a973a722bb" data-build-timestamp="1778080404" data-version="1.0.0" data-env="" data-color-version="v2" lang="en" data-theme="claude" data-mode="light" class="h-screen antialiased scroll-smooth"><head data-ion-ip-country="US"><link rel="preconnect" href="https://assets-proxy.anthropic.com" crossorigin><link rel="dns-prefetch" href="https://assets-proxy.anthropic.com"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title data-react-fallback>Claude</title><meta data-react-fallback name="description" content="Claude is Anthropic's AI, built for problem solvers. Tackle complex challenges, analyze data, write code, and think through your hardest work."><meta name="apple-itunes-app" content="app-id=6473753684"><meta property="og:type" content="website"><meta property="og:site_name" content="Claude"><meta property="og:image" content="https://claude.ai/images/claude_ogimage.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><link rel="icon" type="image/svg+xml" href="https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/cd02a42d9-Vq_H3mgS.svg"><link rel="icon" type="image/png" sizes="32x32" href="https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/ce67964e7-CAX1bqSh.png"><link rel="icon" type="image/png" sizes="16x16" href="https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/c03e51811-DebilQLI.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="apple-touch-icon" href="https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/c129d018a-jJjJELY8.png"><link rel="apple-touch-startup-image" href="/images/claude_app_icon.png"><link rel="manifest" href="/manifest.json"><meta name="mobile-web-app-capable" content="yes"><link rel="preload" href="https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/cc27851ad-CFxw3nG7.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/c66fc489e-C-BHYa_K.woff2" as="font" type="font/woff2" crossorigin><script nonce="NA5jLXWeqtSp9UatYmQXNQ==">void 0===globalThis.process&&(globalThis.process={env:{},cwd:function(){return"/"}}),void 0===globalThis.global&&(globalThis.global=globalThis)</script><script type="application/ld+json" nonce="NA5jLXWeqtSp9UatYmQXNQ==">{
-        "@context": "https://schema.org",
-        "@graph": [
-          {
-            "@type": "WebSite",
-            "name": "Claude",
-            "alternateName": ["Claude.ai", "Claude by Anthropic"],
-            "url": "https://claude.com"
-          },
-          {
-            "@type": "Organization",
-            "name": "Anthropic",
-            "url": "https://www.anthropic.com",
-            "logo": "https://claude.ai/images/claude_ogimage.png",
-            "sameAs": [
-              "https://x.com/AnthropicAI",
-              "https://www.linkedin.com/company/anthropic",
-              "https://www.youtube.com/@anthropic-ai"
-            ]
-          }
-        ]
-      }</script><script nonce="NA5jLXWeqtSp9UatYmQXNQ==">!function(){try{performance.mark?.("rq_cache:preload_start");const e="keyval-store",o="keyval",r="react-query-cache",t=new Promise(t=>{if(!window.indexedDB)return void t(void 0);const c=indexedDB.open(e);c.onupgradeneeded=()=>{c.transaction?.abort()},c.onerror=()=>t(void 0),c.onsuccess=()=>{const a=c.result;if(!a.objectStoreNames.contains(o))return a.close(),indexedDB.deleteDatabase(e),void t(void 0);try{const e=a.transaction(o,"readonly").objectStore(o).get(r);e.onerror=()=>{a.close(),t(void 0)},e.onsuccess=()=>{a.close(),window.__PRELOADED_IDB_CACHE_RESULT__=e.result,t(e.result)}}catch{a.close(),t(void 0)}}});window.__PRELOADED_IDB_CACHE__=t,performance.measure?.("rq_cache:preload_exec",{start:"rq_cache:preload_start"})}catch{}}()</script><script type="module" crossorigin src="https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/index-BiWO_RRi.js" nonce="NA5jLXWeqtSp9UatYmQXNQ=="></script><link rel="modulepreload" crossorigin href="https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/vendor-Dk4vBcdj.js"><link rel="modulepreload" crossorigin href="https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/c4b350ac1-JIzGAldN.js"><link rel="modulepreload" crossorigin href="https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/c2b5b5d37-COkQW50t.js"><link rel="modulepreload" crossorigin href="https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/ce3e25bac-BN94--G9.js"><link rel="modulepreload" crossorigin href="https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/c43c5949a-JeYqqWhr.js"><link rel="modulepreload" crossorigin href="https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/tree-sitter-BfScwQVn.js"><link rel="stylesheet" crossorigin href="https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/c4b350ac1-DDwtwZDd.css"><link rel="stylesheet" crossorigin href="https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/c2b5b5d37-BkTVBA1G.css"><link rel="stylesheet" crossorigin href="https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/c6a992d55-jXYyRpAk.css"></head><body class="bg-bg-100 text-text-100 font-ui min-h-screen"><div id="root"></div><script nonce="NA5jLXWeqtSp9UatYmQXNQ==">(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.nonce='NA5jLXWeqtSp9UatYmQXNQ==';d.innerHTML="window.__CF$cv$params={r:'9f78f82da9c6d704',t:'MTc3ODA4MDgzMQ=='};var a=document.createElement('script');a.nonce='NA5jLXWeqtSp9UatYmQXNQ==';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body></html>
+<div id="login-screen">
+  <div style="width:100px;height:100px;background:var(--brand);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
+    <svg width="52" height="52" viewBox="0 0 52 52" fill="none"><path d="M26 4L5 22h7v24h11V34h6v12h11V22h7L26 4z" fill="white" opacity=".95"/><path d="M22 28c0 2.2 1.8 4 4 4s4-1.8 4-4-1.8-4-4-4-4 1.8-4 4z" fill="white" opacity=".5"/></svg>
+  </div>
+  <div style="font-size:20px;font-weight:700;color:var(--brand-dark);text-align:center;margin-bottom:4px;">Second Home Senior Living</div>
+  <div style="font-size:13px;color:var(--g400);text-align:center;margin-bottom:28px;">Staff Portal</div>
+  <div class="login-card">
+    <label class="fl">Select your name</label>
+    <select id="login-name" class="mb">
+      <option value="">— Choose your name —</option>
+      <optgroup label="Caregivers">
+        <option>Brenda M.</option><option>Comfort A.</option><option>Beatrice W.</option>
+        <option>Noma M.</option><option>Mireille A.</option>
+      </optgroup>
+      <optgroup label="Management"><option value="ALM">ALM / Manager</option></optgroup>
+    </select>
+    <button class="btn-p" onclick="doLogin()">Sign in</button>
+  </div>
+</div>
+
+<div id="app">
+  <div class="top-bar">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:34px;height:34px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 52 52" fill="none"><path d="M26 4L5 22h7v24h11V34h6v12h11V22h7L26 4z" fill="white"/></svg>
+      </div>
+      <div><div class="tb-name" id="bar-name">—</div><div class="tb-role" id="bar-shift">Second Home Senior Living</div></div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">Sign out</button>
+  </div>
+
+  <div class="main">
+
+    <!-- HOME -->
+    <div id="screen-home" class="screen active">
+      <div class="wb"><h2 id="welcome-msg">Welcome!</h2><p id="welcome-date">—</p></div>
+      <div class="sg">
+        <div class="sc"><div class="sl">Clock status</div><div class="sv" id="home-clk" style="font-size:14px;color:var(--g400);">Not clocked in</div><div style="font-size:11px;color:var(--g400);margin-top:2px;" id="home-clk-t"></div></div>
+        <div class="sc"><div class="sl">Today</div><div class="sv" id="home-date" style="font-size:14px;">—</div></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.07em;margin:20px 0 10px;">Forms &amp; records</div>
+      <div class="ar" onclick="showScreen('clock')">
+        <div class="ai" style="background:#e8f4fc;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#1a7abf" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg></div>
+        <div class="at"><h4>Clock in / out</h4><p>Record your shift</p></div><div class="aa">›</div>
+      </div>
+      <div class="ar" id="cn-tile" onclick="openCareNotes()" style="opacity:0.4;pointer-events:none;">
+        <div class="ai" style="background:#f0fdf4;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+        <div class="at"><h4>Daily Care Notes</h4><p id="cn-tile-sub">Clock in first to complete notes</p></div><div class="aa">›</div>
+      </div>
+      <div class="ar" id="wn-tile" onclick="showScreen('wellness')" style="opacity:0.4;pointer-events:none;">
+        <div class="ai" style="background:#fffbeb;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+        <div class="at"><h4>Wellness Notes</h4><p>Real-time health observations</p></div><div class="aa">›</div>
+      </div>
+      <div class="ar" id="beh-tile" onclick="showScreen('behavior')" style="opacity:0.4;pointer-events:none;">
+        <div class="ai" style="background:#fbeaf0;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#993556" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="at"><h4>Behavior Calendar</h4><p>Log behavioral episodes</p></div><div class="aa">›</div>
+      </div>
+      <div class="ar" id="ir-tile" onclick="showScreen('incident')" style="opacity:0.4;pointer-events:none;">
+        <div class="ai" style="background:#fef2f2;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div class="at"><h4>Incident Report</h4><p>Document accidents &amp; incidents</p></div><div class="aa">›</div>
+      </div>
+      <div class="ar" id="mm-tile" onclick="showScreen('meeting')" style="opacity:0.4;pointer-events:none;">
+        <div class="ai" style="background:#e8f4fc;"><svg class="ni" viewBox="0 0 24 24" fill="none" stroke="#1a7abf" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div class="at"><h4>Monday Morning Meeting</h4><p>Weekly staff report</p></div><div class="aa">›</div>
+      </div>
+    </div>
+
+    <!-- CLOCK -->
+    <div id="screen-clock" class="screen">
+      <div class="ph">Clock in / out</div><div class="ps">Your shift time is recorded automatically.</div>
+      <div class="card">
+        <div class="cd">
+          <div class="ct2" id="live-clock">--:--</div>
+          <div class="cdate" id="live-date">—</div>
+          <div id="clk-badge" class="cs so"><div class="sd do" id="clk-dot"></div><span id="clk-txt">Not clocked in</span></div>
+        </div>
+        <div id="shift-det" style="display:none;">
+          <div class="fd"></div>
+          <div class="shi"><span class="shk">Clocked in at</span><span class="shv" id="ci-t">—</span></div>
+          <div class="shi"><span class="shk">Caregiver</span><span class="shv" id="ci-n">—</span></div>
+        </div>
+      </div>
+      <div id="btn-in"><button class="btn-p" onclick="clockIn()">Clock in</button></div>
+      <div id="btn-out" style="display:none;">
+        <div id="co-warning" style="display:none;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:12px 14px;margin-bottom:12px;">
+          <p style="font-size:13px;font-weight:700;color:#991b1b;margin-bottom:6px;">Cannot clock out — care notes missing for:</p>
+          <ul id="co-missing-list" style="font-size:13px;color:#991b1b;padding-left:18px;margin:0;"></ul>
+        </div>
+        <button class="btn-d" id="btn-out-action" onclick="clockOut()">Clock out</button>
+      </div>
+      <div id="clk-sm" class="sm"><p id="clk-sm-txt">Clocked out successfully</p><span>Your time has been recorded.</span></div>
+    </div>
+
+    <!-- DAILY CARE NOTES -->
+    <div id="screen-carenotes" class="screen">
+      <div class="ph">Daily Care Notes</div><div class="ps">Caregiver must complete a care note for every resident on every shift.</div>
+      <div class="card">
+        <label class="fl">Resident</label>
+        <select id="cn-res" class="mb"><option value="">— Select resident —</option></select>
+      </div>
+      <div class="card">
+        <div class="ct">Observations checklist</div>
+        <div class="ib">Tap Yes or No for each item.</div>
+        <div id="cn-list"></div>
+      </div>
+      <div class="card">
+        <label class="fl">Explain any YES items — were these reported to the ALM and/or Delegating Nurse?</label>
+        <textarea id="cn-notes" placeholder="Document observations, explanations, and any other changes here..." style="min-height:100px;" class="mb"></textarea>
+        <label class="fl">Your name</label>
+        <input type="text" id="cn-sig" class="mb" placeholder="Full name">
+      </div>
+      <button class="btn-p" onclick="submitForm('cn')">Submit care notes</button>
+      <div id="cn-sm" class="sm"><p>Care notes submitted!</p><span>Recorded to Google Sheets.</span></div>
+    </div>
+
+    <!-- WELLNESS NOTES -->
+    <div id="screen-wellness" class="screen">
+      <div class="ph">Wellness Notes</div><div class="ps">Log real-time observations — date, time, and detail required.</div>
+      <div class="card">
+        <label class="fl">Resident</label>
+        <select id="wn-res" class="mb"><option value="">— Select resident —</option></select>
+        <div class="two-col mb">
+          <div><label class="fl">Date</label><input type="date" id="wn-date"></div>
+          <div><label class="fl">Time</label><input type="time" id="wn-time"></div>
+        </div>
+        <label class="fl">Wellness note</label>
+        <textarea id="wn-note" style="min-height:110px;" placeholder="Describe the observation in full detail..." class="mb"></textarea>
+        <label class="fl">Your name &amp; title</label>
+        <input type="text" id="wn-sig" placeholder="Full name and title" class="mb">
+      </div>
+      <button class="btn-p" onclick="submitForm('wn')">Submit wellness note</button>
+      <div id="wn-sm" class="sm"><p>Wellness note submitted!</p><span>Recorded to Google Sheets.</span></div>
+    </div>
+
+    <!-- BEHAVIOR CALENDAR -->
+    <div id="screen-behavior" class="screen">
+      <div class="ph">Behavior Calendar</div>
+      <div class="card">
+        <label class="fl">Resident</label>
+        <select id="beh-res" class="mb"><option value="">— Select resident —</option></select>
+        <label class="fl">Behavior observed</label>
+        <select id="beh-type" class="mb">
+          <option value="">— Select behavior —</option>
+          <option>Agitation</option><option>Hitting</option><option>Spitting</option>
+          <option>Pinching</option><option>Throwing objects</option><option>Refusing medications</option>
+          <option>Refusing to eat</option><option>Refusing to change depends</option><option>Foul language</option>
+        </select>
+        <label class="fl">Time of day</label>
+        <select id="beh-tod" class="mb">
+          <option value="">— Select time of day —</option>
+          <option>Morning</option><option>Afternoon</option><option>Evening</option><option>Night</option>
+        </select>
+        <label class="fl">Additional notes (optional)</label>
+        <textarea id="beh-notes" placeholder="Describe the episode, context, or any actions taken..." class="mb"></textarea>
+        <label class="fl">Your name</label>
+        <input type="text" id="beh-sig" class="mb" placeholder="Full name">
+      </div>
+      <button class="btn-p" onclick="submitForm('beh')">Submit behavior calendar</button>
+      <div id="beh-sm" class="sm"><p>Behavior Calendar submitted!</p><span>Recorded to Google Sheets.</span></div>
+    </div>
+
+    <!-- INCIDENT REPORT -->
+    <div id="screen-incident" class="screen">
+      <div class="ph">Incident Report</div><div class="ps">Complete within 24 hours. The ALM will be notified upon submission.</div>
+      <div class="st">Incident details</div>
+      <div class="card">
+        <label class="fl">Resident</label>
+        <select id="ir-res" class="mb"><option value="">— Select resident —</option></select>
+        <div class="two-col mb">
+          <div><label class="fl">Age</label><input type="text" id="ir-age" placeholder="Age"></div>
+          <div><label class="fl">Gender</label><select id="ir-gen"><option value="">Select</option><option>Male</option><option>Female</option></select></div>
+        </div>
+        <div class="two-col mb">
+          <div><label class="fl">Date</label><input type="date" id="ir-date"></div>
+          <div><label class="fl">Time</label><input type="time" id="ir-time"></div>
+        </div>
+        <label class="fl">Place of incident</label>
+        <select id="ir-place" class="mb">
+          <option value="">— Select location —</option>
+          <option>Resident room</option><option>Bathroom</option><option>Dining room</option>
+          <option>Common area / living room</option><option>Hallway</option><option>Outside / courtyard</option><option>Other</option>
+        </select>
+        <label class="fl">Individuals present</label>
+        <div class="two-col mb">
+          <input type="text" id="ir-p1" placeholder="1. Name"><input type="text" id="ir-p2" placeholder="2. Name">
+          <input type="text" id="ir-p3" placeholder="3. Name"><input type="text" id="ir-p4" placeholder="4. Name">
+        </div>
+        <label class="fl">Description of incident</label>
+        <textarea id="ir-desc" style="min-height:120px;" placeholder="Describe exactly what happened..." class="mb"></textarea>
+      </div>
+      <div class="st">Staff response</div>
+      <div class="card">
+        <label class="fl">Staff's initial response</label>
+        <textarea id="ir-resp" placeholder="What did you do immediately after?" class="mb"></textarea>
+        <div class="cr">
+          <span class="cl">Was first aid treatment necessary?</span>
+          <div class="co">
+            <button class="cb" onclick="irToggle(this,'y','ir-fa-wrap')">Yes</button>
+            <button class="cb" onclick="irToggle(this,'n','ir-fa-wrap')">No</button>
+          </div>
+        </div>
+        <div id="ir-fa-wrap" style="display:none;margin-top:10px;">
+          <label class="fl">If yes, what was rendered?</label>
+          <textarea id="ir-fa-d" placeholder="Describe first aid provided..." class="mb"></textarea>
+        </div>
+      </div>
+      <div class="st">Follow-up actions</div>
+      <div class="card">
+        <div class="cr">
+          <span class="cl">Was a physician called?</span>
+          <div class="co">
+            <button class="cb" onclick="irToggle(this,'y','ir-doc-wrap')">Yes</button>
+            <button class="cb" onclick="irToggle(this,'n','ir-doc-wrap')">No</button>
+          </div>
+        </div>
+        <div id="ir-doc-wrap" style="display:none;margin-top:10px;">
+          <label class="fl">Physician name</label><input type="text" id="ir-doc-w" placeholder="Physician name" class="mb">
+          <label class="fl">Time called</label><input type="time" id="ir-doc-t" class="mb">
+          <div class="cr" style="padding:0;margin-bottom:10px;">
+            <span class="cl">Orders received?</span>
+            <div class="co">
+              <button class="cb" onclick="irToggle(this,'y','ir-ord-wrap')">Yes</button>
+              <button class="cb" onclick="irToggle(this,'n','ir-ord-wrap')">No</button>
+            </div>
+          </div>
+          <div id="ir-ord-wrap" style="display:none;">
+            <label class="fl">What were the orders?</label>
+            <textarea id="ir-ord-d" placeholder="Describe orders..." class="mb"></textarea>
+          </div>
+        </div>
+        <div class="fd"></div>
+        <div class="cr">
+          <span class="cl">Was 911 called?</span>
+          <div class="co">
+            <button class="cb" onclick="irToggle(this,'y','ir-911-wrap')">Yes</button>
+            <button class="cb" onclick="irToggle(this,'n','ir-911-wrap')">No</button>
+          </div>
+        </div>
+        <div id="ir-911-wrap" style="display:none;margin-top:10px;">
+          <div class="two-col mb">
+            <div><label class="fl">Arrival time</label><input type="time" id="ir-911a"></div>
+            <div><label class="fl">Departure time</label><input type="time" id="ir-911d"></div>
+          </div>
+        </div>
+        <div class="fd"></div>
+        <div class="cr">
+          <span class="cl">Was resident taken to hospital?</span>
+          <div class="co">
+            <button class="cb" onclick="irToggle(this,'y','ir-hosp-wrap')">Yes</button>
+            <button class="cb" onclick="irToggle(this,'n','ir-hosp-wrap')">No</button>
+          </div>
+        </div>
+        <div id="ir-hosp-wrap" style="display:none;margin-top:10px;">
+          <label class="fl">Name of hospital</label><input type="text" id="ir-hosp-n" placeholder="Hospital name" class="mb">
+          <div class="cr" style="padding:0;margin-bottom:10px;">
+            <span class="cl">Was resident admitted?</span>
+            <div class="co">
+              <button class="cb" onclick="selIR(this,'y')">Yes</button>
+              <button class="cb" onclick="selIR(this,'n')">No</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="st">Follow-up notifications</div>
+      <div class="card">
+        <div class="cr">
+          <span class="cl">a. Family or resident's rep. notified?</span>
+          <div class="co">
+            <button class="cb" onclick="irToggle(this,'y','ir-fam-wrap')">Yes</button>
+            <button class="cb" onclick="irToggle(this,'n','ir-fam-wrap')">No</button>
+          </div>
+        </div>
+        <div id="ir-fam-wrap" style="display:none;margin-top:10px;">
+          <label class="fl">Name of family member / rep. notified</label>
+          <input type="text" id="ir-fam-w" placeholder="Full name" class="mb">
+          <div class="two-col mb">
+            <div><label class="fl">Date notified</label><input type="date" id="ir-fam-d"></div>
+            <div><label class="fl">Time notified</label><input type="time" id="ir-fam-t"></div>
+          </div>
+        </div>
+        <div class="fd"></div>
+        <div class="cr">
+          <span class="cl">b. Health care practitioner notified?</span>
+          <div class="co">
+            <button class="cb" onclick="irToggle(this,'y','ir-hcp-wrap')">Yes</button>
+            <button class="cb" onclick="irToggle(this,'n','ir-hcp-wrap')">No</button>
+          </div>
+        </div>
+        <div id="ir-hcp-wrap" style="display:none;margin-top:10px;">
+          <label class="fl">Name of health care practitioner notified</label>
+          <input type="text" id="ir-hcp-w" placeholder="Full name" class="mb">
+          <div class="two-col mb">
+            <div><label class="fl">Date notified</label><input type="date" id="ir-hcp-d"></div>
+            <div><label class="fl">Time notified</label><input type="time" id="ir-hcp-t"></div>
+          </div>
+        </div>
+        <div class="fd"></div>
+        <div class="cr">
+          <span class="cl">c. Licensing authority or law enforcement notified?</span>
+          <div class="co">
+            <button class="cb" onclick="irToggle(this,'y','ir-law-wrap')">Yes</button>
+            <button class="cb" onclick="irToggle(this,'n','ir-law-wrap')">No</button>
+          </div>
+        </div>
+        <div id="ir-law-wrap" style="display:none;margin-top:10px;">
+          <label class="fl">Who &amp; from what agency?</label>
+          <input type="text" id="ir-law-w" placeholder="Name and agency" class="mb">
+        </div>
+      </div>
+      <div class="st">Investigation &amp; corrective measures</div>
+      <div class="card">
+        <div class="cr">
+          <span class="cl">Was the incident reported to the ALM?</span>
+          <div class="co">
+            <button class="cb" onclick="selIR(this,'y');document.getElementById('ir-inv-why-wrap').style.display='none';">Yes</button>
+            <button class="cb" onclick="selIR(this,'n');document.getElementById('ir-inv-why-wrap').style.display='block';">No</button>
+          </div>
+        </div>
+        <div id="ir-inv-why-wrap" style="display:none;margin-top:10px;">
+          <label class="fl">If no, why not?</label>
+          <textarea id="ir-inv-w" placeholder="Explain..." class="mb"></textarea>
+        </div>
+        <label class="fl" style="margin-top:4px;">Corrective measures taken or put in place</label>
+        <textarea id="ir-corr" placeholder="Describe corrective actions..." class="mb"></textarea>
+        <div class="fd"></div>
+        <label class="fl">Staff initiating report</label>
+        <input type="text" id="ir-sig" placeholder="Full name" class="mb">
+        <label class="fl">Name of assisted living program</label>
+        <input type="text" id="ir-prog" value="Second Home Senior Living" class="mb">
+      </div>
+      <button class="btn-d" onclick="submitForm('ir')">Submit incident report</button>
+      <div id="ir-sm" class="sm"><p>Incident report submitted!</p><span>The ALM has been notified. Report recorded in Google Sheets.</span></div>
+    </div>
+
+    <!-- MONDAY MORNING MEETING -->
+    <div id="screen-meeting" class="screen">
+      <div class="ph">Monday Morning Meeting</div><div class="ps">Report on all Residents from the prior week.</div>
+      <div class="card">
+        <label class="fl">Staff completing this form</label>
+        <input type="text" id="mm-staff" class="mb" readonly style="background:var(--g100);color:var(--g600);cursor:not-allowed;">
+        <label class="fl">Date range covered</label>
+        <div class="two-col mb">
+          <div><label class="fl">From</label><input type="date" id="mm-date-from"></div>
+          <div><label class="fl">To</label><input type="date" id="mm-date-to"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct">Resident updates</div>
+        <div class="ib">Select each resident from the dropdown and write an update below. Leave blank if there is no update.</div>
+        <div id="mm-res-fields"></div>
+      </div>
+      <button class="btn-p" onclick="submitForm('mm')">Submit morning meeting form</button>
+      <div id="mm-sm" class="sm"><p>Morning meeting submitted!</p><span>Recorded to Google Sheets.</span></div>
+    </div>
+
+  </div>
+
+  <div class="bnav">
+    <button class="nb active" id="nav-home" onclick="showScreen('home');setNav('home')">
+      <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
+    </button>
+  </div>
+</div>
+
+<iframe name="hidden_iframe" style="display:none;"></iframe>
+
+<script>
+const RESIDENTS=['Susan T.','Gwen B.','Thomas B.','Karen H.','Marita M.','Grace H.','Elsa M.'];
+const CN_ITEMS=['Changes in medication?','Changes in food intake?','Changes in behavior?','Changes in mental status?','Falls?','Skin issues?','Constipation issues?','Insomnia problems?','Hospitalizations / ER visits?','Doctor appointments?','Other changes to care?'];
+const SHEET_URL='https://script.google.com/macros/s/AKfycbzvDz2Uxftgb0CS-6HP75LZ-LySz8FSIc6yUUYBFUeX0LFfivmx8C7R5KkIYX12-war0Q/exec';
+
+let clockedIn=false,clockInTime=null,currentUser='',currentShift='';
+let completedNotes=new Set();
+let cameFromCareNotes=false;
+
+function doLogin(){
+  const n=document.getElementById('login-name').value;
+  if(!n){alert('Please select your name.');return;}
+  currentUser=n;
+  document.getElementById('bar-name').textContent=n;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  populateResidents();
+  buildChecklist();
+  buildMeetingFields();
+  prefillUser();
+  updateHomeDate();
+  startClock();
+}
+
+function doLogout(){
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-name').value='';
+  clockedIn=false;clockInTime=null;
+  completedNotes=new Set();
+}
+
+function populateResidents(){
+  ['wn-res','beh-res','ir-res'].forEach(id=>{
+    const sel=document.getElementById(id);
+    sel.innerHTML='<option value="">— Select resident —</option>';
+    RESIDENTS.forEach(r=>{const o=document.createElement('option');o.textContent=r;sel.appendChild(o);});
+  });
+  refreshCNDropdown();
+}
+
+function refreshCNDropdown(){
+  const sel=document.getElementById('cn-res');
+  const current=sel.value;
+  sel.innerHTML='<option value="">— Select resident —</option>';
+  const remaining=RESIDENTS.filter(r=>!completedNotes.has(r));
+  if(remaining.length===0){
+    sel.innerHTML='<option value="">All notes completed!</option>';
+  } else {
+    remaining.forEach(r=>{const o=document.createElement('option');o.textContent=r;sel.appendChild(o);});
+    if(remaining.includes(current)) sel.value=current;
+  }
+}
+
+function prefillUser(){
+  ['cn-sig','wn-sig','beh-sig','ir-sig','mm-staff'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value=currentUser;
+  });
+  const now=new Date();
+  document.getElementById('wn-date').valueAsDate=now;
+  document.getElementById('ir-date').valueAsDate=now;
+  document.getElementById('wn-time').value=now.toTimeString().slice(0,5);
+  document.getElementById('ir-time').value=now.toTimeString().slice(0,5);
+}
+
+function updateHomeDate(){
+  const now=new Date();
+  const h=now.getHours();
+  const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('welcome-msg').textContent=g+', '+currentUser.split(' ')[0]+'!';
+  document.getElementById('welcome-date').textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('home-date').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+function startClock(){
+  function tick(){
+    const now=new Date();
+    const tEl=document.getElementById('live-clock');
+    const dEl=document.getElementById('live-date');
+    if(tEl)tEl.textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    if(dEl)dEl.textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  }
+  tick();
+  if(window._clockInterval)clearInterval(window._clockInterval);
+  window._clockInterval=setInterval(tick,1000);
+}
+
+function openCareNotes(){
+  if(!clockedIn)return;
+  showScreen('carenotes');
+}
+
+function updateCNTile(){
+  const tile=document.getElementById('cn-tile');
+  const sub=document.getElementById('cn-tile-sub');
+  if(!clockedIn){
+    tile.style.opacity='0.4';tile.style.pointerEvents='none';
+    sub.textContent='Clock in first to complete notes';
+  } else {
+    tile.style.opacity='1';tile.style.pointerEvents='auto';
+    const done=completedNotes.size,total=RESIDENTS.length;
+    sub.textContent=done===total?'All notes complete ✓':done+' of '+total+' notes completed';
+  }
+}
+
+function checkClockOut(){
+  const missing=RESIDENTS.filter(r=>!completedNotes.has(r));
+  const btn=document.getElementById('btn-out-action');
+  const warning=document.getElementById('co-warning');
+  const list=document.getElementById('co-missing-list');
+  if(missing.length===0){
+    btn.style.opacity='1';btn.style.pointerEvents='auto';warning.style.display='none';
+  } else {
+    btn.style.opacity='0.4';btn.style.pointerEvents='none';warning.style.display='block';
+    list.innerHTML=missing.map(r=>`<li>${r}</li>`).join('');
+  }
+}
+
+function clockIn(){
+  clockedIn=true;clockInTime=new Date();
+  completedNotes=new Set();
+  const ts=clockInTime.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('clk-badge').className='cs si';
+  document.getElementById('clk-dot').className='sd di';
+  document.getElementById('clk-txt').textContent='Clocked in';
+  document.getElementById('shift-det').style.display='block';
+  document.getElementById('ci-t').textContent=ts;
+  document.getElementById('ci-n').textContent=currentUser;
+  document.getElementById('btn-in').style.display='none';
+  document.getElementById('btn-out').style.display='block';
+  document.getElementById('home-clk').textContent='Clocked in';
+  document.getElementById('home-clk').style.color='var(--success)';
+  document.getElementById('home-clk-t').textContent=ts;
+  document.getElementById('clk-sm').className='sm';
+  updateCNTile();
+  checkClockOut();
+  ['wn-tile','beh-tile','ir-tile','mm-tile'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.style.opacity='1';el.style.pointerEvents='auto';}
+  });
+  send({form:'Clock Record',caregiver:currentUser,action:'Clock In',timestamp:clockInTime.toISOString()});
+}
+
+function clockOut(){
+  const out=new Date();
+  const ms=out-clockInTime;
+  const hrs=Math.floor(ms/3600000),mins=Math.floor((ms%3600000)/60000);
+  document.getElementById('clk-badge').className='cs so';
+  document.getElementById('clk-dot').className='sd do';
+  document.getElementById('clk-txt').textContent='Clocked out';
+  document.getElementById('btn-out').style.display='none';
+  document.getElementById('btn-in').style.display='block';
+  document.getElementById('clk-sm-txt').textContent='Clocked out — shift: '+hrs+'h '+mins+'m';
+  document.getElementById('clk-sm').className='sm show';
+  document.getElementById('home-clk').textContent='Clocked out';
+  document.getElementById('home-clk').style.color='var(--g400)';
+  send({form:'Clock Record',caregiver:currentUser,action:'Clock Out',clockIn:clockInTime.toISOString(),clockOut:out.toISOString(),duration:hrs+'h '+mins+'m'});
+  clockedIn=false;
+}
+
+function showScreen(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+n).classList.add('active');
+  if(n==='clock')startClock();
+}
+
+function setNav(n){
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('nav-'+n);if(el)el.classList.add('active');
+}
+
+function buildChecklist(){
+  const c=document.getElementById('cn-list');c.innerHTML='';
+  const triggers=['Falls?','Hospitalizations / ER visits?'];
+  CN_ITEMS.forEach((item,i)=>{
+    const row=document.createElement('div');row.className='cr';
+    row.innerHTML=`<span class="cl">${item}</span><div class="co">
+      <button class="cb" onclick="selCheck(this,'y',${i})">Yes</button>
+      <button class="cb" onclick="selCheck(this,'n',${i})">No</button>
+    </div>`;
+    c.appendChild(row);
+    if(triggers.includes(item)){
+      const prompt=document.createElement('div');
+      prompt.id='ir-prompt-'+i;
+      prompt.style.cssText='display:none;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:10px 12px;margin:6px 0 10px;font-size:13px;color:#991b1b;line-height:1.5;';
+      prompt.innerHTML=`<strong style="display:block;margin-bottom:4px;">⚠ Incident report required</strong>A "${item.replace('?','')}" event must be documented. Please complete an incident report after submitting this care note.<br><button onclick="cameFromCareNotes=true;showScreen('incident');" style="margin-top:8px;background:#dc2626;color:white;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Go to incident report →</button>`;
+      c.appendChild(prompt);
+    }
+  });
+}
+
+function selCheck(btn,v,i){
+  btn.parentElement.querySelectorAll('.cb').forEach(b=>b.className='cb');
+  btn.classList.add('s'+v);
+  const triggers=['Falls?','Hospitalizations / ER visits?'];
+  if(triggers.includes(CN_ITEMS[i])){
+    const prompt=document.getElementById('ir-prompt-'+i);
+    if(prompt)prompt.style.display=(v==='y')?'block':'none';
+  }
+}
+
+function getChecklist(){
+  const rows=document.getElementById('cn-list').querySelectorAll('.cr');
+  const r={};
+  rows.forEach((row,i)=>{
+    const sel=row.querySelector('.cb.sy,.cb.sn');
+    r[CN_ITEMS[i]]=sel?(sel.classList.contains('sy')?'YES':'NO'):'—';
+  });
+  return r;
+}
+
+function irToggle(btn,v,showId){
+  btn.parentElement.querySelectorAll('.cb').forEach(b=>b.className='cb');
+  btn.classList.add('s'+v);
+  const wrap=document.getElementById(showId);
+  if(wrap)wrap.style.display=(v==='y')?'block':'none';
+}
+
+function selIR(btn,v){
+  btn.parentElement.querySelectorAll('.cb').forEach(b=>b.className='cb');
+  btn.classList.add('s'+v);
+}
+
+function buildMeetingFields(){
+  const c=document.getElementById('mm-res-fields');c.innerHTML='';
+  RESIDENTS.forEach((r,i)=>{
+    const w=document.createElement('div');
+    w.style.cssText='margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--g100);';
+    if(i===RESIDENTS.length-1)w.style.borderBottom='none';
+    const uid='mm_'+i;
+    const opts=RESIDENTS.map(res=>`<option value="${res}"${res===r?' selected':''}>${res}</option>`).join('');
+    w.innerHTML=`<label class="fl">Resident</label>
+      <select id="mmsel-${uid}" class="mb">${opts}</select>
+      <label class="fl">Update</label>
+      <textarea id="mmr-${uid}" style="width:100%;min-height:80px;padding:10px 12px;border:1.5px solid var(--g200);border-radius:8px;font-size:14px;font-family:inherit;line-height:1.5;resize:vertical;" placeholder="Write update or leave blank if there is no update."></textarea>`;
+    c.appendChild(w);
+  });
+}
+
+function send(data){
+  const form=document.createElement('form');
+  form.method='POST';
+  form.action=SHEET_URL;
+  form.target='hidden_iframe';
+  const input=document.createElement('input');
+  input.type='hidden';
+  input.name='data';
+  input.value=JSON.stringify(data);
+  form.appendChild(input);
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
+}
+
+function showSuccess(id){
+  const el=document.getElementById(id+'-sm');
+  el.className='sm show';
+  setTimeout(()=>{el.className='sm';},4000);
+}
+
+function submitForm(type){
+  if(type==='cn'){
+    const res=document.getElementById('cn-res').value;
+    if(!res){alert('Please select a resident.');return;}
+    send({form:'Daily Care Notes',caregiver:currentUser,timestamp:new Date().toISOString(),
+      resident:res,checklist:JSON.stringify(getChecklist()),
+      notes:document.getElementById('cn-notes').value,signer:document.getElementById('cn-sig').value});
+    completedNotes.add(res);
+    refreshCNDropdown();
+    updateCNTile();
+    checkClockOut();
+    showSuccess('cn');
+    document.getElementById('cn-res').value='';
+    document.getElementById('cn-notes').value='';
+    document.querySelectorAll('#cn-list .cb').forEach(b=>b.className='cb');
+    document.querySelectorAll('[id^="ir-prompt-"]').forEach(p=>p.style.display='none');
+  } else if(type==='wn'){
+    const res=document.getElementById('wn-res').value;
+    if(!res){alert('Please select a resident.');return;}
+    send({form:'Wellness Notes',caregiver:currentUser,timestamp:new Date().toISOString(),
+      resident:res,date:document.getElementById('wn-date').value,
+      time:document.getElementById('wn-time').value,
+      note:document.getElementById('wn-note').value,signer:document.getElementById('wn-sig').value});
+    showSuccess('wn');
+  } else if(type==='beh'){
+    const res=document.getElementById('beh-res').value;
+    if(!res){alert('Please select a resident.');return;}
+    const btype=document.getElementById('beh-type').value;
+    if(!btype){alert('Please select a behavior.');return;}
+    const tod=document.getElementById('beh-tod').value;
+    if(!tod){alert('Please select a time of day.');return;}
+    send({form:'Behavior Calendar',caregiver:currentUser,timestamp:new Date().toISOString(),
+      resident:res,behavior:btype,timeOfDay:tod,
+      notes:document.getElementById('beh-notes').value,signer:document.getElementById('beh-sig').value});
+    showSuccess('beh');
+  } else if(type==='ir'){
+    const res=document.getElementById('ir-res').value;
+    if(!res){alert('Please select a resident.');return;}
+    const g=id=>(document.getElementById(id)||{}).value||'';
+    const gcb=wrap=>{const b=document.querySelector('#'+wrap+' .cb.sy,#'+wrap+' .cb.sn');return b?(b.classList.contains('sy')?'Yes':'No'):'';}
+    const gir=sel=>{const b=document.querySelector('#screen-incident [onclick*="'+sel+'"].sy,#screen-incident [onclick*="'+sel+'"].sn');return b?(b.classList.contains('sy')?'Yes':'No'):'';}
+    send({form:'Incident Report',caregiver:currentUser,timestamp:new Date().toISOString(),
+      resident:res,age:g('ir-age'),gender:g('ir-gen'),date:g('ir-date'),time:g('ir-time'),
+      place:g('ir-place'),persons:[g('ir-p1'),g('ir-p2'),g('ir-p3'),g('ir-p4')].filter(Boolean).join('; '),
+      description:g('ir-desc'),staffResponse:g('ir-resp'),
+      firstAid:gir('ir-fa-wrap'),firstAidDesc:g('ir-fa-d'),
+      physicianCalled:gir('ir-doc-wrap'),physicianName:g('ir-doc-w'),physicianTimeCalled:g('ir-doc-t'),
+      ordersReceived:gir('ir-ord-wrap'),ordersDesc:g('ir-ord-d'),
+      called911:gir('ir-911-wrap'),arrival911:g('ir-911a'),depart911:g('ir-911d'),
+      hospitalTransport:gir('ir-hosp-wrap'),hospitalName:g('ir-hosp-n'),
+      admitted:gcb('ir-hosp-wrap'),
+      familyNotified:gir('ir-fam-wrap'),familyWho:g('ir-fam-w'),familyDate:g('ir-fam-d'),familyTime:g('ir-fam-t'),
+      hcpNotified:gir('ir-hcp-wrap'),hcpWho:g('ir-hcp-w'),hcpDate:g('ir-hcp-d'),hcpTime:g('ir-hcp-t'),
+      lawNotified:gir('ir-law-wrap'),lawWho:g('ir-law-w'),
+      reportedToALM:document.querySelector('#screen-incident .cb.sy')?'Yes':document.querySelector('#screen-incident .cb.sn')?'No':'',
+      invWhy:g('ir-inv-w'),corrective:g('ir-corr'),staffSig:g('ir-sig'),program:g('ir-prog')});
+    showSuccess('ir');
+    if(cameFromCareNotes){
+      cameFromCareNotes=false;
+      setTimeout(()=>{showScreen('carenotes');},2500);
+    }
+  } else if(type==='mm'){
+    const updates={};
+    RESIDENTS.forEach((r,i)=>{
+      const uid='mm_'+i;
+      const sel=document.getElementById('mmsel-'+uid);
+      const ta=document.getElementById('mmr-'+uid);
+      if(ta)updates[sel?sel.value:r]=ta.value;
+    });
+    send({form:'Monday Morning Meeting',caregiver:currentUser,timestamp:new Date().toISOString(),
+      staff:document.getElementById('mm-staff').value,
+      dateFrom:document.getElementById('mm-date-from').value,
+      dateTo:document.getElementById('mm-date-to').value,updates:JSON.stringify(updates)});
+    showSuccess('mm');
+  }
+}
+</script>
+</body>
+</html>
