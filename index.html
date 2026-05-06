@@ -585,7 +585,7 @@ function clockIn(){
     const el=document.getElementById(id);
     if(el){el.style.opacity='1';el.style.pointerEvents='auto';}
   });
-  send({form:'Clock Record',caregiver:currentUser,action:'Clock In',timestamp:clockInTime.toISOString()});
+  send({form:'Clock Record',caregiver:currentUser,action:'Clock In',timestamp:formatTS(clockInTime)});
 }
 
 function clockOut(){
@@ -601,8 +601,15 @@ function clockOut(){
   document.getElementById('clk-sm').className='sm show';
   document.getElementById('home-clk').textContent='Clocked out';
   document.getElementById('home-clk').style.color='var(--g400)';
-  send({form:'Clock Record',caregiver:currentUser,action:'Clock Out',clockIn:clockInTime.toISOString(),clockOut:out.toISOString(),duration:hrs+'h '+mins+'m'});
+  send({form:'Clock Record',caregiver:currentUser,action:'Clock Out',clockIn:formatTS(clockInTime),clockOut:formatTS(out),duration:hrs+'h '+mins+'m'});
   clockedIn=false;
+}
+
+function formatTS(date){
+  const d=date||new Date();
+  const dateStr=d.toLocaleDateString('en-US',{year:'numeric',month:'2-digit',day:'2-digit'});
+  const timeStr=d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
+  return dateStr+' '+timeStr;
 }
 
 function showScreen(n){
@@ -709,7 +716,7 @@ function submitForm(type){
   if(type==='cn'){
     const res=document.getElementById('cn-res').value;
     if(!res){alert('Please select a resident.');return;}
-    send({form:'Daily Care Notes',caregiver:currentUser,timestamp:new Date().toISOString(),
+    send({form:'Daily Care Notes',caregiver:currentUser,timestamp:formatTS(new Date()),
       resident:res,checklist:JSON.stringify(getChecklist()),
       notes:document.getElementById('cn-notes').value,signer:document.getElementById('cn-sig').value});
     completedNotes.add(res);
@@ -732,7 +739,7 @@ function submitForm(type){
   } else if(type==='wn'){
     const res=document.getElementById('wn-res').value;
     if(!res){alert('Please select a resident.');return;}
-    send({form:'Wellness Notes',caregiver:currentUser,timestamp:new Date().toISOString(),
+    send({form:'Wellness Notes',caregiver:currentUser,timestamp:formatTS(new Date()),
       resident:res,date:document.getElementById('wn-date').value,
       time:document.getElementById('wn-time').value,
       note:document.getElementById('wn-note').value,signer:document.getElementById('wn-sig').value});
@@ -744,7 +751,7 @@ function submitForm(type){
     if(!btype){alert('Please select a behavior.');return;}
     const tod=document.getElementById('beh-tod').value;
     if(!tod){alert('Please select a time of day.');return;}
-    send({form:'Behavior Calendar',caregiver:currentUser,timestamp:new Date().toISOString(),
+    send({form:'Behavior Calendar',caregiver:currentUser,timestamp:formatTS(new Date()),
       resident:res,behavior:btype,timeOfDay:tod,
       notes:document.getElementById('beh-notes').value,signer:document.getElementById('beh-sig').value});
     showSuccess('beh');
@@ -754,7 +761,7 @@ function submitForm(type){
     const g=id=>(document.getElementById(id)||{}).value||'';
     const gcb=wrap=>{const b=document.querySelector('#'+wrap+' .cb.sy,#'+wrap+' .cb.sn');return b?(b.classList.contains('sy')?'Yes':'No'):'';}
     const gir=sel=>{const b=document.querySelector('#screen-incident [onclick*="'+sel+'"].sy,#screen-incident [onclick*="'+sel+'"].sn');return b?(b.classList.contains('sy')?'Yes':'No'):'';}
-    send({form:'Incident Report',caregiver:currentUser,timestamp:new Date().toISOString(),
+    send({form:'Incident Report',caregiver:currentUser,timestamp:formatTS(new Date()),
       resident:res,age:g('ir-age'),gender:g('ir-gen'),date:g('ir-date'),time:g('ir-time'),
       place:g('ir-place'),persons:[g('ir-p1'),g('ir-p2'),g('ir-p3'),g('ir-p4')].filter(Boolean).join('; '),
       description:g('ir-desc'),staffResponse:g('ir-resp'),
@@ -782,7 +789,7 @@ function submitForm(type){
       const ta=document.getElementById('mmr-'+uid);
       if(ta)updates[sel?sel.value:r]=ta.value;
     });
-    send({form:'Monday Morning Meeting',caregiver:currentUser,timestamp:new Date().toISOString(),
+    send({form:'Monday Morning Meeting',caregiver:currentUser,timestamp:formatTS(new Date()),
       staff:document.getElementById('mm-staff').value,
       dateFrom:document.getElementById('mm-date-from').value,
       dateTo:document.getElementById('mm-date-to').value,updates:JSON.stringify(updates)});
