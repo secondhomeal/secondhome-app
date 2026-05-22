@@ -454,11 +454,39 @@ let clockedIn=false,clockInTime=null,currentUser='',currentShift='';
 let completedNotes=new Set();
 let cameFromCareNotes=false;
 
+function saveSession(){
+  const session={
+    currentUser,
+    clockedIn,
+    clockInTime:clockInTime?clockInTime.toISOString():null,
+    completedNotes:Array.from(completedNotes)
+  };
+  sessionStorage.setItem('shsl_session',JSON.stringify(session));
+}
+
+function restoreSession(){
+  try{
+    const raw=sessionStorage.getItem('shsl_session');
+    if(!raw)return false;
+    const s=JSON.parse(raw);
+    if(!s.currentUser)return false;
+    currentUser=s.currentUser;
+    clockedIn=s.clockedIn||false;
+    clockInTime=s.clockInTime?new Date(s.clockInTime):null;
+    completedNotes=new Set(s.completedNotes||[]);
+    return true;
+  }catch(e){return false;}
+}
+
 function doLogin(){
   const n=document.getElementById('login-name').value;
   if(!n){alert('Please select your name.');return;}
   currentUser=n;
-  document.getElementById('bar-name').textContent=n;
+  launchApp();
+}
+
+function launchApp(){
+  document.getElementById('bar-name').textContent=currentUser;
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='flex';
   populateResidents();
@@ -467,6 +495,27 @@ function doLogin(){
   prefillUser();
   updateHomeDate();
   startClock();
+  if(clockedIn&&clockInTime){
+    const ts=clockInTime.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('clk-badge').className='cs si';
+    document.getElementById('clk-dot').className='sd di';
+    document.getElementById('clk-txt').textContent='Clocked in';
+    document.getElementById('shift-det').style.display='block';
+    document.getElementById('ci-t').textContent=ts;
+    document.getElementById('ci-n').textContent=currentUser;
+    document.getElementById('btn-in').style.display='none';
+    document.getElementById('btn-out').style.display='block';
+    document.getElementById('home-clk').textContent='Clocked in';
+    document.getElementById('home-clk').style.color='var(--success)';
+    document.getElementById('home-clk-t').textContent=ts;
+    updateCNTile();
+    checkClockOut();
+    ['wn-tile','beh-tile','ir-tile','mm-tile'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el){el.style.opacity='1';el.style.pointerEvents='auto';}
+    });
+  }
+  saveSession();
 }
 
 function doLogout(){
@@ -475,6 +524,7 @@ function doLogout(){
   document.getElementById('login-name').value='';
   clockedIn=false;clockInTime=null;
   completedNotes=new Set();
+  sessionStorage.removeItem('shsl_session');
 }
 
 function populateResidents(){
@@ -586,23 +636,29 @@ function clockIn(){
     if(el){el.style.opacity='1';el.style.pointerEvents='auto';}
   });
   send({form:'Clock Record',caregiver:currentUser,action:'Clock In',timestamp:formatTS(clockInTime)});
+  saveSession();
 }
 
 function clockOut(){
   const out=new Date();
   const ms=out-clockInTime;
   const hrs=Math.floor(ms/3600000),mins=Math.floor((ms%3600000)/60000);
-  document.getElementById('clk-badge').className='cs so';
-  document.getElementById('clk-dot').className='sd do';
-  document.getElementById('clk-txt').textContent='Clocked out';
-  document.getElementById('btn-out').style.display='none';
-  document.getElementById('btn-in').style.display='block';
-  document.getElementById('clk-sm-txt').textContent='Clocked out — shift: '+hrs+'h '+mins+'m';
-  document.getElementById('clk-sm').className='sm show';
-  document.getElementById('home-clk').textContent='Clocked out';
-  document.getElementById('home-clk').style.color='var(--g400)';
   send({form:'Clock Record',caregiver:currentUser,action:'Clock Out',clockIn:formatTS(clockInTime),clockOut:formatTS(out),duration:hrs+'h '+mins+'m'});
   clockedIn=false;
+  clockInTime=null;
+  completedNotes=new Set();
+  sessionStorage.removeItem('shsl_session');
+  // Show brief goodbye message then return to login
+  document.getElementById('clk-sm-txt').textContent='Clocked out at '+formatTS(out)+' — goodbye, '+currentUser.split(' ')[0]+'!';
+  document.getElementById('clk-sm').className='sm show';
+  setTimeout(()=>{
+    document.getElementById('clk-sm').className='sm';
+    document.getElementById('login-screen').style.display='flex';
+    document.getElementById('app').style.display='none';
+    document.getElementById('login-name').value='';
+    currentUser='';
+    showScreen('home');
+  },3000);
 }
 
 function formatTS(date){
@@ -725,6 +781,7 @@ function submitForm(type){
     refreshCNDropdown();
     updateCNTile();
     checkClockOut();
+    saveSession();
     showSuccess('cn');
     const btn=document.getElementById('cn-submit-btn');
     btn.style.background='var(--success)';
@@ -798,6 +855,12 @@ function submitForm(type){
     showSuccess('mm');
   }
 }
+// Auto-restore session on page load
+window.addEventListener('load', function(){
+  if(restoreSession()){
+    launchApp();
+  }
+});
 </script>
 </body>
 </html>
