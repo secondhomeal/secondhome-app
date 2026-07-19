@@ -446,7 +446,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.5;}
 <iframe name="hidden_iframe" style="display:none;"></iframe>
 
 <script>
-const RESIDENTS=['Susan T.','Thomas B.','Marita M.','Grace H.','Elsa M.'];
+const RESIDENTS=['Susan T.','Thomas B.','Marita M.','Grace H.','Elsa M.','Barbara N.'];
 const CN_ITEMS=['Changes in medication?','Changes in food intake?','Changes in behavior?','Changes in mental status?','Falls?','Skin issues?','Constipation issues?','Insomnia problems?','Hospitalizations / ER visits?','Doctor appointments?','Other changes to care?'];
 const SHEET_URL='https://script.google.com/macros/s/AKfycbzvDz2Uxftgb0CS-6HP75LZ-LySz8FSIc6yUUYBFUeX0LFfivmx8C7R5KkIYX12-war0Q/exec';
 
@@ -461,12 +461,12 @@ function saveSession(){
     clockInTime:clockInTime?clockInTime.toISOString():null,
     completedNotes:Array.from(completedNotes)
   };
-  sessionStorage.setItem('shsl_session',JSON.stringify(session));
+  localStorage.setItem('shsl_session',JSON.stringify(session));
 }
 
 function restoreSession(){
   try{
-    const raw=sessionStorage.getItem('shsl_session');
+    const raw=localStorage.getItem('shsl_session');
     if(!raw)return false;
     const s=JSON.parse(raw);
     if(!s.currentUser)return false;
@@ -524,7 +524,7 @@ function doLogout(){
   document.getElementById('login-name').value='';
   clockedIn=false;clockInTime=null;
   completedNotes=new Set();
-  sessionStorage.removeItem('shsl_session');
+  localStorage.removeItem('shsl_session');
 }
 
 function populateResidents(){
@@ -647,7 +647,7 @@ function clockOut(){
   clockedIn=false;
   clockInTime=null;
   completedNotes=new Set();
-  sessionStorage.removeItem('shsl_session');
+  localStorage.removeItem('shsl_session');
   // Show brief goodbye message then return to login
   document.getElementById('clk-sm-txt').textContent='Clocked out at '+formatTS(out)+' — goodbye, '+currentUser.split(' ')[0]+'!';
   document.getElementById('clk-sm').className='sm show';
